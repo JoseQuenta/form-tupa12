@@ -11,7 +11,7 @@
 <body>
     <h1>TUPA 12</h1>
 
-    <form id="pdfForm" action="/submit" method="post">
+    <form id="pdfForm" action="/submit" method="post" enctype="multipart/form-data">
         <h2>Datos Generales / Hoja 1</h2>
 
         <div class="form-group">
@@ -138,6 +138,11 @@
             </div>
             <input type="hidden" name="firma_img" id="firma_img">
             <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="adjuntos">Adjuntar voucher, tarjeta de propiedad:</label>
+            <input type="file" id="adjuntos" name="adjuntos" multiple>
         </div>
 
 

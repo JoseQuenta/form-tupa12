@@ -96,6 +96,9 @@ def submit_form():
     correo_destinatario = form_data.get("correo")
     if correo_destinatario:
         try:
+            # with open(OUTPUT_PDF_PATH, "rb") as f:
+            #     pdf_bytes = f.read()
+            # enviar_pdf_por_correo(correo_destinatario, pdf_bytes, form_data)
             enviar_pdf_por_correo(correo_destinatario, OUTPUT_PDF_PATH)
         except Exception as e:
             print(f"Error al enviar correo: {e}")
@@ -151,6 +154,44 @@ def enviar_pdf_por_correo(destinatario, archivo_pdf):
     })
 
     print("Respuesta de Resend:", respuesta)
+
+# def enviar_pdf_por_correo(destinatario_usuario, pdf_bytes, form_data):
+#     try:
+#         contenido_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
+
+#         adjunto = {
+#             "filename": "formulario_sanipes.pdf",
+#             "content": contenido_base64,
+#             "type": "application/pdf"
+#         }
+
+#         # Usuario
+#         resend.Emails.send({
+#             "from": "onboarding@resend.dev",
+#             "to": [destinatario_usuario],
+#             "subject": "Formulario recibido - SANIPES",
+#             "html": "<p>Gracias por enviar su formulario. Se adjunta el PDF generado.</p>",
+#             "attachments": [adjunto]
+#         })
+
+#         # Admin
+#         correo_admin = "joseaquenta@gmail.com"
+#         nombre = form_data.get('nombre', '')
+#         apellido = form_data.get('apellido', '')
+#         dni = form_data.get('dni', '')
+#         mensaje_html = f"<p>El usuario <strong>{nombre} {apellido}</strong> ha enviado un formulario. Su DNI es <strong>{dni}</strong>.</p>"
+
+#         resend.Emails.send({
+#             "from": "onboarding@resend.dev",
+#             "to": [correo_admin],
+#             "subject": "Nuevo trámite recibido - SANIPES",
+#             "html": mensaje_html,
+#             "attachments": [adjunto]
+#         })
+
+#         print("Correos enviados correctamente.")
+#     except Exception as e:
+#         print("Error al enviar correos:", e)
 
 
 
