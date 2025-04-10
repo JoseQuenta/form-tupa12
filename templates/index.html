@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario con Firma</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <h1>Formulario para Rellenar PDF</h1>
+
+    <form id="pdfForm" action="/submit" method="post">
+        <h2>Datos Generales / Hoja 1</h2>
+
+        <div class="form-group">
+            <label for="dni">DNI:</label>
+            <div class="input-group">
+                <input type="tel" id="dni" name="dni" maxlength="8" pattern="\d{8}" inputmode="numeric" required>
+                <button type="button" onclick="buscarDni()">Buscar</button>
+                <span id="status"></span>
+            </div>
+            <span id="error" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="nombre">Nombre(s):</label>
+            <input type="text" id="nombre" name="nombre" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="apellido">Apellido(s):</label>
+            <input type="text" id="apellido" name="apellido" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="direccion_h1">Dirección:</label>
+            <input type="text" id="direccion_h1" name="direccion_h1" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="distrito">Distrito:</label>
+            <input type="text" id="distrito" name="distrito" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="provincia">Provincia:</label>
+            <input type="text" id="provincia" name="provincia" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="departamento">Departamento:</label>
+            <input type="text" id="departamento" name="departamento" class="uppercase-input">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="ubigeo">Ubigeo:</label>
+            <input type="tel" id="ubigeo" name="ubigeo" inputmode="numeric" pattern="\d+">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" maxlength="9" pattern="9\d{8}" placeholder="9XXXXXXXX"
+                inputmode="numeric">
+            <span class="error-message"></span>
+        </div>
+
+
+
+        <div class="form-group">
+            <label for="correo">Correo electrónico:</label>
+            <input type="email" id="correo" name="correo">
+            <span class="error-message"></span>
+            <div class="checkbox-container">
+                <input type="checkbox" id="sinCorreo" name="sinCorreo">
+                <label for="sinCorreo">No tengo correo</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="numero_pago">Número de Pago:</label>
+            <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha_pago">Fecha de Pago:</label>
+            <input type="date" id="fecha_pago" name="fecha_pago">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="placa">Placa:</label>
+            <input type="text" id="placa" name="placa" pattern="[A-Za-z0-9]{3}-?[A-Za-z0-9]{3}"
+                placeholder="ABC-123 o ABC-D4E" class="uppercase-input" maxlength="7"> <span
+                class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="carga_util">Carga útil (kg):</label>
+            <input type="tel" id="carga_util" name="carga_util" pattern="\d+" inputmode="numeric">
+            <span class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="lugar_auditoria">Lugar Auditoría:</label>
+            <select id="lugar_auditoria" name="lugar_auditoria">
+                <option value="" disabled>Seleccione un lugar</option>
+                <option value="camana">OSD CAMANÁ</option>
+                <option value="chimbote">OSD CHIMBOTE</option>
+                <option value="huancayo">OSD HUANCAYO</option>
+                <option value="ilo">OSD ILO</option>
+                <option value="iquitos">OSD IQUITOS</option>
+                <option value="madre_de_dios">OSD MADRE DE DIOS</option>
+                <option value="paita">OSD PAITA</option>
+                <option value="pisco">OSD PISCO</option>
+                <option value="puno">OSD PUNO</option>
+                <option value="sechura">OSD SECHURA</option>
+                <option value="tarapoto">OSD TARAPOTO</option>
+                <option value="tumbes">OSD TUMBES</option>
+                <option value="tacna" selected>TACNA</option>
+            </select>
+            <span class="error-message"></span>
+        </div>
+
+        <h2>Firma</h2>
+        <div class="form-group">
+            <label for="firma">Firme aquí:</label>
+            <div class="firma-container"> <canvas id="firma" width="300" height="150"></canvas> <button type="button"
+                    onclick="limpiarFirma()">Limpiar Firma</button>
+            </div>
+            <input type="hidden" name="firma_img" id="firma_img">
+            <span class="error-message"></span>
+        </div>
+
+
+        <div class="form-actions">
+            <button type="submit">Generar PDF</button>
+        </div>
+
+    </form>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

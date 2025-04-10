@@ -1,0 +1,348 @@
+/* body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+label {
+    display: inline-block;
+    width: 180px;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="email"] {
+    width: 250px;
+    margin-bottom: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+h2 {
+    margin-top: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+#status {
+    color: green;
+    font-size: 0.9em;
+}
+
+#error {
+    color: red;
+    font-size: 0.9em;
+}
+
+canvas {
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    cursor: crosshair;
+}
+    
+*/
+/* === Estilos Base (Mobile First) === */
+:root {
+    /* Define algunas variables para colores y espaciado si quieres */
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --light-gray: #f8f9fa;
+    --dark-gray: #343a40;
+    --border-color: #ced4da;
+    --danger-color: red;
+    --success-color: green;
+    --spacing-unit: 15px;
+  }
+  
+  * {
+    box-sizing: border-box; /* Aplica a todo para manejar padding/border fácilmente */
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* Fuente más moderna y compatible */
+    margin: 0; /* Quita margen por defecto */
+    padding: var(--spacing-unit); /* Espaciado general */
+    background-color: var(--light-gray); /* Un fondo suave */
+    color: var(--dark-gray);
+    line-height: 1.6; /* Mejora legibilidad */
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    color: var(--dark-gray);
+  }
+  
+  h2 {
+    margin-top: calc(var(--spacing-unit) * 2);
+    margin-bottom: var(--spacing-unit);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: calc(var(--spacing-unit) / 2);
+    color: var(--primary-color);
+  }
+  
+  form {
+    background-color: #fff; /* Fondo blanco para el formulario */
+    padding: calc(var(--spacing-unit) * 1.5);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil */
+  }
+  
+  /* Agrupador para label + input (ver HTML sugerido) */
+  .form-group {
+    margin-bottom: var(--spacing-unit);
+  }
+  
+  label {
+    display: block; /* Hace que la etiqueta ocupe su propia línea */
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.95em;
+  }
+  
+  /* Estilos comunes para inputs, select */
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"], /* Añadido para DNI, teléfono, etc. */
+  select {
+    display: block; /* Ocupa todo el ancho disponible */
+    width: 100%;
+    padding: 10px 12px; /* Más padding */
+    margin-bottom: 10px; /* Espacio abajo */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem; /* Tamaño de fuente consistente */
+    line-height: 1.5;
+    background-color: #fff; /* Asegurar fondo blanco */
+  }
+  
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Indicador de foco */
+  }
+  
+  /* Grupo para input + botón (ej: DNI + Buscar) */
+  .input-group {
+    display: flex;
+    align-items: center; /* Alinea verticalmente */
+    gap: 10px; /* Espacio entre input y botón */
+  }
+  
+  .input-group input {
+    flex-grow: 1; /* El input ocupa el espacio sobrante */
+    margin-bottom: 0; /* Quita margen inferior dentro del grupo */
+  }
+  
+  .input-group button {
+    flex-shrink: 0; /* Evita que el botón se encoja */
+    margin-top: 0; /* Alineado con el input */
+  }
+  
+  /* Estilo para el checkbox "sin correo" */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: -5px; /* Ajuste fino de espacio */
+    margin-bottom: var(--spacing-unit);
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    width: auto; /* Tamaño natural del checkbox */
+    margin-right: 8px;
+    margin-bottom: 0;
+  }
+  
+  .checkbox-group label {
+    margin-bottom: 0; /* Sin margen inferior */
+    font-weight: normal; /* Peso normal para la etiqueta del checkbox */
+  }
+  
+  /* Botones */
+  button,
+  input[type="submit"] { /* Aplicar también a submit si lo usas */
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+    transition: background-color 0.2s ease; /* Transición suave */
+  }
+  
+  button:hover,
+  input[type="submit"]:hover {
+    background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+  }
+  
+  /* Botones secundarios (como "Limpiar Firma" o "Buscar") */
+  button[type="button"] {
+    background-color: var(--secondary-color);
+  }
+  
+  button[type="button"]:hover {
+    background-color: #5a6268;
+  }
+  
+  /* Área de acciones del formulario */
+  .form-actions {
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    text-align: center; /* Centrar botón principal en móvil */
+  }
+  
+  /* Mensajes de estado y error */
+  #status,
+  #error {
+    display: inline-block; /* Para que esté al lado del botón buscar */
+    font-size: 0.9em;
+    margin-left: 10px; /* Espacio desde el botón */
+  }
+  
+  #status {
+    color: var(--success-color);
+  }
+  
+  #error {
+    color: var(--danger-color);
+  }
+  
+  /* Error messages below fields (optional but recommended) */
+  .error-message {
+      color: var(--danger-color);
+      font-size: 0.85em;
+      margin-top: -5px; /* Reduce space */
+      display: block; /* Ensure it takes its own line */
+      min-height: 1em; /* Reserve space even when empty */
+  }
+  
+  
+  /* Canvas de Firma */
+  canvas#firma {
+    display: block;
+    max-width: 100%; /* Hace el canvas responsive */
+    height: auto; /* Mantiene proporción */
+    margin-bottom: 10px;
+    border: 1px solid var(--dark-gray);
+    cursor: crosshair;
+    background-color: #fefefe; /* Fondo ligeramente diferente */
+    border-radius: 4px;
+  }
+  
+  /* Contenedor de la firma para alinear botón */
+  .firma-container {
+    display: flex;
+    flex-direction: column; /* Apilado en móvil */
+    align-items: flex-start;
+  }
+  
+  .firma-container button {
+    margin-top: 5px; /* Espacio entre canvas y botón */
+  }
+  
+  
+  /* === Estilos para pantallas más grandes (Desktop) === */
+  /* Usamos min-width. Estos estilos se aplican SI la pantalla es MÁS ANCHA de 768px */
+  @media (min-width: 768px) {
+    body {
+      max-width: 960px; /* Ancho máximo para el contenido */
+      margin: calc(var(--spacing-unit) * 2) auto; /* Centrar en pantalla */
+      padding: calc(var(--spacing-unit) * 2); /* Más padding en escritorio */
+    }
+  
+    form {
+      padding: calc(var(--spacing-unit) * 2);
+    }
+  
+    /* Layout de dos columnas para label + input */
+    .form-group {
+      display: flex;
+      align-items: flex-start; /* Alinear al inicio */
+      gap: var(--spacing-unit); /* Espacio entre label e input */
+    }
+  
+    .form-group label {
+      flex: 0 0 180px; /* Ancho fijo para la etiqueta */
+      text-align: right; /* Alinear texto a la derecha */
+      margin-bottom: 0; /* Quitar margen inferior */
+      padding-top: 10px; /* Alinear verticalmente con el padding del input */
+    }
+  
+    /* El contenedor del input/select/grupo ocupa el resto */
+    .form-group > input[type="text"],
+    .form-group > input[type="date"],
+    .form-group > input[type="number"],
+    .form-group > input[type="email"],
+    .form-group > input[type="tel"],
+    .form-group > select,
+    .form-group > .input-group, /* El grupo DNI+Buscar */
+    .form-group > .firma-container, /* El grupo Firma */
+    .form-group > .checkbox-group { /* El grupo Checkbox */
+      flex: 1; /* Ocupa el espacio restante */
+    }
+  
+    .input-group {
+        gap: 15px; /* Un poco más de espacio en escritorio */
+    }
+  
+    /* Ajuste para el checkbox, indentándolo */
+    .checkbox-group {
+      padding-left: 195px; /* Indentación (180px label + 15px gap) */
+      margin-bottom: 0; /* Ajustar si es necesario */
+    }
+    /* Si el checkbox tiene su propia etiqueta en el form-group, ajustar así */
+    .form-group.checkbox-align {
+        align-items: center; /* Centrar verticalmente si la etiqueta es corta */
+    }
+    .form-group.checkbox-align label {
+        padding-top: 0; /* Resetear padding */
+    }
+     .form-group.checkbox-align .checkbox-group {
+        padding-left: 0; /* No necesita indentación extra si la label ya está */
+    }
+  
+  
+    /* Ajustes para la firma en escritorio */
+    .firma-container {
+      flex-direction: row; /* Canvas y botón en línea */
+      align-items: flex-start; /* Alinear arriba */
+      gap: var(--spacing-unit);
+    }
+  
+    canvas#firma {
+      max-width: 300px; /* Restaurar un ancho máximo si se desea */
+      height: 150px; /* Y un alto fijo */
+      margin-bottom: 0;
+    }
+  
+    .firma-container button {
+      margin-top: 0; /* Quitar margen superior */
+    }
+  
+    /* Alinear acciones a la derecha o indentado */
+    .form-actions {
+      text-align: right; /* Alinear botón a la derecha */
+      padding-right: 15px; /* Opcional: pequeño margen */
+      /* O si prefieres indentado como los inputs: */
+      /* padding-left: 195px; /* 180px label + 15px gap */
+      /* text-align: left; */
+    }
+
+    .uppercase-input {
+        text-transform: uppercase;
+      }
+  }
