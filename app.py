@@ -3,8 +3,15 @@ import base64
 import fitz  # PyMuPDF
 from flask import Flask, request, render_template, send_file, after_this_request, abort
 from coordenadas import coordenadas
+from dotenv import load_dotenv
+import resend
 
 from dni_api import consultar_dni  # Importa la función desde tu módulo separado
+
+load_dotenv()
+resend.api_key = os.getenv("RESEND_API_KEY")
+# --- INICIALIZACIÓN DE FLASK ---
+
 
 app = Flask(__name__)
 
@@ -85,6 +92,15 @@ def submit_form():
         except: pass
         abort(500, f"Error guardando el PDF final: {e}")
 
+    # --- Enviar por correo si se proporcionó un correo ---
+    correo_destinatario = form_data.get("correo")
+    if correo_destinatario:
+        try:
+            enviar_pdf_por_correo(correo_destinatario, OUTPUT_PDF_PATH)
+        except Exception as e:
+            print(f"Error al enviar correo: {e}")
+
+
     @after_this_request
     def eliminar_archivo(response):
         try:
@@ -95,7 +111,9 @@ def submit_form():
             app.logger.error("Error eliminando archivo: %s", e)
         return response
 
+
     try:
+        
         return send_file(OUTPUT_PDF_PATH, as_attachment=True, download_name='documento_generado.pdf')
     except Exception as e:
         print(f"Error al enviar archivo: {e}")
@@ -111,6 +129,30 @@ def api_dni(dni):
         }
     else:
         return {'success': False}, 404
+
+
+def enviar_pdf_por_correo(destinatario, archivo_pdf):
+    with open(archivo_pdf, "rb") as f:
+        contenido_pdf = f.read()
+        contenido_base64 = base64.b64encode(contenido_pdf).decode("utf-8")
+
+    respuesta = resend.Emails.send({
+        "from": "Carla<onboarding@resend.dev>",  # este debe estar verificado en Resend
+        "to": [destinatario],
+        "subject": "Documento generado por el formulario",
+        "html": "<p>Adjunto el PDF solicitado.</p>",
+        "attachments": [
+            {
+                "filename": "documento_generado.pdf",
+                "content": contenido_base64,
+                "type": "application/pdf"
+            }
+        ]
+    })
+
+    print("Respuesta de Resend:", respuesta)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
