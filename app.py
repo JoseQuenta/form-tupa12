@@ -1,199 +1,165 @@
 import os
 import base64
 import fitz  # PyMuPDF
-from flask import Flask, request, render_template, send_file, after_this_request, abort
-from coordenadas import coordenadas
+from flask import Flask, request, render_template, send_file, abort
+from werkzeug.utils import secure_filename
+from io import BytesIO
 from dotenv import load_dotenv
 import resend
 
+from coordenadas import coordenadas
 from dni_api import consultar_dni  # Importa la función desde tu módulo separado
 
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
-# --- INICIALIZACIÓN DE FLASK ---
-
 
 app = Flask(__name__)
 
-# --- CONFIGURACIÓN ---
 TEMPLATE_PDF_PATH = "plantilla_A4.pdf"
 OUTPUT_PDF_PATH = "temp_output.pdf"
 
-# --- COORDENADAS PARA INSERTAR TEXTO EN EL PDF ---
-# Las coordenadas se definen en el archivo coordenadas.py
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/submit', methods=['POST'])
 def submit_form():
+    # 1. Tomamos los datos de texto
     form_data = request.form.to_dict()
 
-    # --- Consulta a API DNI ---
+    # 2. Capturamos los archivos 'adjuntos'
+    archivos = request.files.getlist('adjuntos')
+    lista_adjuntos = []
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            filename = secure_filename(archivo.filename)
+            file_bytes = archivo.read()
+            content_base64 = base64.b64encode(file_bytes).decode('utf-8')
+            adjunto = {
+                "filename": filename,
+                "content": content_base64,
+                "type": archivo.content_type or "application/octet-stream"
+            }
+            lista_adjuntos.append(adjunto)
+
+    # 3. Consulta API DNI
     dni_ingresado = form_data.get('dni')
     if dni_ingresado:
         datos_dni = consultar_dni(dni_ingresado)
         if datos_dni:
             form_data['nombre'] = datos_dni.get('nombres', form_data.get('nombre'))
             form_data['apellido'] = f"{datos_dni.get('ape_paterno', '')} {datos_dni.get('ape_materno', '')}".strip()
-            form_data['direccion_h1'] = datos_dni.get('domiciliado', {}).get('direccion', form_data.get('direccion_h1'))
-            form_data['distrito'] = datos_dni.get('domiciliado', {}).get('distrito', form_data.get('distrito'))
-            form_data['provincia'] = datos_dni.get('domiciliado', {}).get('provincia', form_data.get('provincia'))
-            form_data['departamento'] = datos_dni.get('domiciliado', {}).get('departamento', form_data.get('departamento'))
-            form_data['ubigeo'] = datos_dni.get('domiciliado', {}).get('ubigeo', form_data.get('ubigeo'))
+            domi = datos_dni.get('domiciliado', {})
+            form_data['direccion_h1'] = domi.get('direccion', form_data.get('direccion_h1'))
+            form_data['distrito']     = domi.get('distrito', form_data.get('distrito'))
+            form_data['provincia']    = domi.get('provincia', form_data.get('provincia'))
+            form_data['departamento'] = domi.get('departamento', form_data.get('departamento'))
+            form_data['ubigeo']       = domi.get('ubigeo', form_data.get('ubigeo'))
 
-    # --- Abrir PDF plantilla ---
+    # 4. Generar PDF
     if not os.path.exists(TEMPLATE_PDF_PATH):
-        print(f"Error: No se encuentra la plantilla '{TEMPLATE_PDF_PATH}'")
-        abort(500, "Error interno del servidor: Falta el archivo PDF base.")
+        print(f"No se encuentra la plantilla '{TEMPLATE_PDF_PATH}'")
+        abort(500, "No se encuentra la plantilla PDF")
 
     try:
         doc = fitz.open(TEMPLATE_PDF_PATH)
-    except Exception as e:
-        print(f"Error abriendo PDF: {e}")
-        abort(500, f"No se pudo abrir el PDF base: {e}")
-
-    # --- Insertar datos en el PDF ---
-    print("Datos a insertar:", form_data)
-    for key, value in form_data.items():
-        if key in coordenadas and value:
-            info = coordenadas[key]
-            page_num = info['page']
-            if 0 <= page_num < len(doc):
-                if key == 'firma_img':
-                    try:
-                        img_data = base64.b64decode(value.split(',')[1])
-                        img_rect = fitz.Rect(info['pos'][0], info['pos'][1], info['pos'][0] + 150, info['pos'][1] + 100)
-                        doc[page_num].insert_image(img_rect, stream=img_data)
-                    except Exception as e:
-                        print(f"No se pudo insertar la firma: {e}")
-                else:
-                    pos = fitz.Point(*info['pos'])
-                    try:
-                        doc[page_num].insert_text(
-                            pos,
-                            str(value),
-                            fontsize=info.get('size', 11),
-                            fontname=info.get('font', 'helv')
-                        )
-                    except Exception as e:
-                        print(f"No se pudo insertar '{key}': {e}")
-            else:
-                print(f"Página {page_num} inválida para '{key}'")
-
-    # --- Guardar PDF generado ---
-    try:
+        for key, value in form_data.items():
+            if key in coordenadas and value:
+                info = coordenadas[key]
+                page_num = info['page']
+                if 0 <= page_num < len(doc):
+                    if key == 'firma_img':
+                        # Insertar firma
+                        try:
+                            sig_data = base64.b64decode(value.split(',')[1])
+                            sig_rect = fitz.Rect(info['pos'][0], info['pos'][1],
+                                                 info['pos'][0] + 150, info['pos'][1] + 100)
+                            doc[page_num].insert_image(sig_rect, stream=sig_data)
+                        except Exception as e:
+                            print("Error al insertar firma:", e)
+                    else:
+                        # Insertar texto normal
+                        try:
+                            doc[page_num].insert_text(
+                                fitz.Point(*info['pos']),
+                                str(value),
+                                fontsize=info.get('size', 11),
+                                fontname=info.get('font', 'helv')
+                            )
+                        except Exception as e:
+                            print(f"No se pudo insertar '{key}': {e}")
         doc.save(OUTPUT_PDF_PATH, garbage=4, deflate=True)
         doc.close()
     except Exception as e:
-        print(f"No se pudo guardar el PDF: {e}")
-        try: doc.close()
-        except: pass
-        abort(500, f"Error guardando el PDF final: {e}")
+        print("Error creando el PDF:", e)
+        abort(500, "Error creando PDF")
 
-    # --- Enviar por correo si se proporcionó un correo ---
+    # 5. Añadir el PDF generado a la lista de adjuntos
+    try:
+        with open(OUTPUT_PDF_PATH, "rb") as f:
+            pdf_data = f.read()
+            pdf_b64 = base64.b64encode(pdf_data).decode('utf-8')
+            lista_adjuntos.append({
+                "filename": "documento_generado.pdf",
+                "content": pdf_b64,
+                "type": "application/pdf"
+            })
+    except Exception as e:
+        print("Error al leer el PDF final:", e)
+        abort(500, "Error interno al leer el PDF")
+
+    # 6. Enviar correo (solo 1 destinatario) con TODOS los adjuntos
     correo_destinatario = form_data.get("correo")
     if correo_destinatario:
         try:
-            # with open(OUTPUT_PDF_PATH, "rb") as f:
-            #     pdf_bytes = f.read()
-            # enviar_pdf_por_correo(correo_destinatario, pdf_bytes, form_data)
-            enviar_pdf_por_correo(correo_destinatario, OUTPUT_PDF_PATH)
+            enviar_correo_con_adjuntos(correo_destinatario, lista_adjuntos)
         except Exception as e:
-            print(f"Error al enviar correo: {e}")
+            print("Error enviando el correo:", e)
 
-
-    @after_this_request
-    def eliminar_archivo(response):
-        try:
-            if os.path.exists(OUTPUT_PDF_PATH):
-                os.remove(OUTPUT_PDF_PATH)
-                print(f"Eliminado: {OUTPUT_PDF_PATH}")
-        except Exception as e:
-            app.logger.error("Error eliminando archivo: %s", e)
-        return response
-
-
+    # 7. Devolver PDF al usuario
     try:
-        
         return send_file(OUTPUT_PDF_PATH, as_attachment=True, download_name='documento_generado.pdf')
     except Exception as e:
-        print(f"Error al enviar archivo: {e}")
-        abort(500, f"No se pudo enviar el PDF generado: {e}")
+        print("Error al enviar el PDF al usuario:", e)
+        abort(500, "Error al enviar el PDF")
+
+
+@app.after_request
+def limpiar_pdf_temp(response):
+    """Elimina el PDF temporal después de la respuesta."""
+    if os.path.exists(OUTPUT_PDF_PATH):
+        try:
+            os.remove(OUTPUT_PDF_PATH)
+            print("PDF temporal eliminado")
+        except Exception as e:
+            print("No se pudo eliminar PDF temporal:", e)
+    return response
+
 
 @app.route('/api/dni/<dni>')
 def api_dni(dni):
     datos = consultar_dni(dni)
     if datos:
-        return {
-            "success": True,
-            **datos
-        }
-    else:
-        return {'success': False}, 404
+        return {"success": True, **datos}
+    return {"success": False}, 404
 
 
-def enviar_pdf_por_correo(destinatario, archivo_pdf):
-    with open(archivo_pdf, "rb") as f:
-        contenido_pdf = f.read()
-        contenido_base64 = base64.b64encode(contenido_pdf).decode("utf-8")
-
+def enviar_correo_con_adjuntos(destinatario, lista_adjuntos):
+    """Envía un correo a 'destinatario' con cualquier cantidad de adjuntos."""
     respuesta = resend.Emails.send({
-        "from": "Carla<onboarding@resend.dev>",  # este debe estar verificado en Resend
-        "to": [destinatario],
-        "subject": "Documento generado por el formulario",
-        "html": "<p>Adjunto el PDF solicitado.</p>",
-        "attachments": [
-            {
-                "filename": "documento_generado.pdf",
-                "content": contenido_base64,
-                "type": "application/pdf"
-            }
-        ]
+        "from": "onboarding@resend.dev",  # Verificar en Resend
+        # "to": [destinatario],
+        # "to": "jose.quenta@sanipes.gob.pe",
+        "to": "soycargototal@gmail.com",
+        
+        "subject": "Formulario con múltiples adjuntos",
+        "html": "<p>Hola, te enviamos tu formulario y archivos adjuntos.</p>",
+        "attachments": lista_adjuntos
     })
-
     print("Respuesta de Resend:", respuesta)
 
-# def enviar_pdf_por_correo(destinatario_usuario, pdf_bytes, form_data):
-#     try:
-#         contenido_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
 
-#         adjunto = {
-#             "filename": "formulario_sanipes.pdf",
-#             "content": contenido_base64,
-#             "type": "application/pdf"
-#         }
-
-#         # Usuario
-#         resend.Emails.send({
-#             "from": "onboarding@resend.dev",
-#             "to": [destinatario_usuario],
-#             "subject": "Formulario recibido - SANIPES",
-#             "html": "<p>Gracias por enviar su formulario. Se adjunta el PDF generado.</p>",
-#             "attachments": [adjunto]
-#         })
-
-#         # Admin
-#         correo_admin = "joseaquenta@gmail.com"
-#         nombre = form_data.get('nombre', '')
-#         apellido = form_data.get('apellido', '')
-#         dni = form_data.get('dni', '')
-#         mensaje_html = f"<p>El usuario <strong>{nombre} {apellido}</strong> ha enviado un formulario. Su DNI es <strong>{dni}</strong>.</p>"
-
-#         resend.Emails.send({
-#             "from": "onboarding@resend.dev",
-#             "to": [correo_admin],
-#             "subject": "Nuevo trámite recibido - SANIPES",
-#             "html": mensaje_html,
-#             "attachments": [adjunto]
-#         })
-
-#         print("Correos enviados correctamente.")
-#     except Exception as e:
-#         print("Error al enviar correos:", e)
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
