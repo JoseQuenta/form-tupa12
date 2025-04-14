@@ -1,64 +1,3 @@
-// import { form, firmaCanvas, firmaImgInput } from './dom-elements.js';
-// import { setupUppercaseFields } from './uppercase-fields.js';
-
-// import {
-//     numeroPagoInput, fechaPagoInput, placaInput, cargaUtilInput,
-//     btnEnviar, firmaError
-// } from './dom-elements.js';
-
-// // ✅ Validar campos de la página 2
-// function validarPagina2() {
-//     const errores = [];
-
-//     if (!numeroPagoInput.value.trim()) errores.push("Número de pago es obligatorio.");
-//     if (!fechaPagoInput.value.trim()) errores.push("Fecha de pago es obligatoria.");
-//     if (!placaInput.value.trim()) errores.push("Placa es obligatoria.");
-//     if (!cargaUtilInput.value.trim()) errores.push("Carga útil es obligatoria.");
-
-//     const blank = document.createElement('canvas');
-//     blank.width = firmaCanvas.width;
-//     blank.height = firmaCanvas.height;
-
-//     if (firmaCanvas.toDataURL() === blank.toDataURL()) {
-//         errores.push("Debe ingresar su firma.");
-//     }
-
-//     return errores;
-// }
-
-// export function setupFormSubmission() {
-//     form.addEventListener("submit", (event) => {
-//         setupUppercaseFields();
-
-//         const blank = document.createElement('canvas');
-//         blank.width = firmaCanvas.width;
-//         blank.height = firmaCanvas.height;
-//         const isCanvasBlank = firmaCanvas.toDataURL() === blank.toDataURL();
-
-//         if (isCanvasBlank) {
-//             alert("Por favor, ingrese su firma.");
-//             event.preventDefault();
-//             return;
-//         }
-
-//         firmaImgInput.value = firmaCanvas.toDataURL("image/png");
-
-//         // Después de enviar y generar el PDF, mostrar pantalla de éxito
-//         setTimeout(() => {
-//             document.getElementById("pdfForm").style.display = "none";
-//             document.getElementById("pantallaExito").style.display = "block";
-
-//             // Asignar enlace al botón de descarga si ya generaste el PDF en backend
-//         const btnDescargar = document.getElementById("btnDescargar");
-//         if (btnDescargar) {
-//             btnDescargar.href = "/ruta/del/pdf/generado.pdf"; // Reemplaza con ruta real
-//             btnDescargar.setAttribute("download", "expediente.pdf");
-//         }
-
-//         }, 500); // Espera un momento para asegurar que el PDF se procese
-//     });
-// }
-
 import {
     form,
     firmaCanvas,
@@ -71,7 +10,9 @@ import {
 } from './dom-elements.js';
 
 import { setupUppercaseFields } from './uppercase-fields.js';
-import { validarPagina1 } from './navigation.js'; // Asegúrate de exportarlo
+import { validarPagina1 } from './navigation.js';
+
+let urlPDFGenerado = null;
 
 // ✅ Validar campos de la segunda página
 function validarPagina2() {
@@ -96,7 +37,6 @@ function validarPagina2() {
 export function setupFormSubmission() {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         setupUppercaseFields();
 
         const errores = [
@@ -109,7 +49,6 @@ export function setupFormSubmission() {
             return;
         }
 
-        // Desactiva botón mientras se procesa
         btnEnviar.disabled = true;
         btnEnviar.textContent = "Generando PDF...";
 
@@ -125,26 +64,49 @@ export function setupFormSubmission() {
             if (!response.ok) throw new Error("Error al generar PDF");
 
             const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
+            urlPDFGenerado = URL.createObjectURL(blob);
+
+            // ➕ Obtener la placa formateada para el nombre del archivo
+            const placa = placaInput.value.trim().toUpperCase().replace(/\s+/g, "-");
+            const nombreArchivo = `TUPA 12 - ${placa || "SIN-PLACA"}.pdf`;
 
             document.getElementById("pdfForm").style.display = "none";
             document.getElementById("pantallaExito").style.display = "block";
 
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "expediente.pdf";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
+            // ➕ Descarga automática
+            const autoLink = document.createElement("a");
+            autoLink.href = urlPDFGenerado;
+            autoLink.download = nombreArchivo;
+            document.body.appendChild(autoLink);
+            autoLink.click();
+            document.body.removeChild(autoLink);
 
         } catch (error) {
             alert("⚠️ Hubo un error al enviar el formulario.");
             console.error(error);
         } finally {
-            // Reactiva el botón
             btnEnviar.disabled = false;
             btnEnviar.textContent = "Generar PDF";
         }
     });
+
+    // ➕ Botón para descarga manual
+    const btnDescargarManual = document.getElementById("btnDescargarPDF");
+    if (btnDescargarManual) {
+        btnDescargarManual.addEventListener("click", () => {
+            if (urlPDFGenerado) {
+                const placa = placaInput.value.trim().toUpperCase().replace(/\s+/g, "-");
+                const nombreArchivo = `TUPA 12 - ${placa || "SIN-PLACA"}.pdf`;
+
+                const manualLink = document.createElement("a");
+                manualLink.href = urlPDFGenerado;
+                manualLink.download = nombreArchivo;
+                document.body.appendChild(manualLink);
+                manualLink.click();
+                document.body.removeChild(manualLink);
+            } else {
+                alert("⚠️ Aún no se ha generado el PDF.");
+            }
+        });
+    }
 }

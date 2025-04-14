@@ -16,6 +16,8 @@ import { btnLimpiar } from './dom-elements.js';
 import { btnEditar } from './dom-elements.js'; // Asegúrate que exportas esto
 import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
+import { setupTipoCarroceria } from './tipo-carroceria.js';
+
 import {
     dniInput,
     nombreInput,
@@ -61,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupUppercaseFields();
     setupFirmaCanvas();
     setupFormSubmission();
+    setupTipoCarroceria();
 
     if (buscarDniBtn) {
         buscarDniBtn.addEventListener('click', buscarDni);

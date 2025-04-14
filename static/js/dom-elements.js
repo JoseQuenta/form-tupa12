@@ -62,3 +62,6 @@ export const btnEditar = document.getElementById("btnEditar");
 export const btnNuevo = document.getElementById("btnNuevoRegistro");
 
 export const firmaError = document.getElementById("firmaError");
+
+export const carroceriaSelect = document.getElementById("carroceria_select");
+export const campoCarroceriaOtro = document.getElementById("campo_carroceria_otro");
