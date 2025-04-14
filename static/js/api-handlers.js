@@ -1,6 +1,6 @@
 import {
     dniInput, nombreInput, apellidoInput, direccionInput, distritoInput,
-    provinciaInput, departamentoInput, ubigeoInput, statusSpan,
+    provinciaInput, departamentoInput, statusSpan,
     rucInput, razonSocialInput, direccionJurInput, distritoJurInput,
     provinciaJurInput, departamentoJurInput, statusRucSpan,
     repLegalInput, dniRepLegalInput, buscarDniBtn, buscarRucBtn
@@ -28,7 +28,7 @@ export async function buscarDni() {
     const dni = dniInput.value.trim();
     const fieldsToClear = [
         nombreInput, apellidoInput, direccionInput,
-        distritoInput, provinciaInput, departamentoInput, ubigeoInput
+        distritoInput, provinciaInput, departamentoInput, 
     ];
 
     if (dni.length !== 8 || isNaN(dni)) {
@@ -54,7 +54,7 @@ export async function buscarDni() {
             distritoInput.value = data.domiciliado?.distrito || "";
             provinciaInput.value = data.domiciliado?.provincia || "";
             departamentoInput.value = data.domiciliado?.departamento || "";
-            ubigeoInput.value = data.domiciliado?.ubigeo || "";
+            // ubigeoInput.value = data.domiciliado?.ubigeo || "";
             updateStatus("Datos de DNI cargados.", "green", statusSpan);
 
             document.getElementById("telefono").focus();

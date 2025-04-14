@@ -85,7 +85,8 @@ export function setupFirmaCanvas() {
     firmaCanvas.addEventListener("touchmove", draw);
     firmaCanvas.addEventListener("touchend", stopDrawing);
     firmaCanvas.addEventListener("touchcancel", stopDrawing);
-}
+
+    }
 
 export function limpiarFirma() {
     const ctx = firmaCanvas.getContext("2d");

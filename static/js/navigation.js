@@ -110,3 +110,5 @@ export function setupNavigation() {
     }
 }
 
+
+export { validarPagina1 }; // Al final del archivo

@@ -58,7 +58,7 @@ def submit_form():
             form_data['distrito']     = domi.get('distrito', form_data.get('distrito'))
             form_data['provincia']    = domi.get('provincia', form_data.get('provincia'))
             form_data['departamento'] = domi.get('departamento', form_data.get('departamento'))
-            form_data['ubigeo']       = domi.get('ubigeo', form_data.get('ubigeo'))
+            # form_data['ubigeo']       = domi.get('ubigeo', form_data.get('ubigeo'))
 
 
 

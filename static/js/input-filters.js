@@ -5,7 +5,7 @@ import {
     numeroPagoInput,
     cargaUtilInput,
     dniInput,
-    ubigeoInput,
+    // ubigeoInput,
     placaInput
   } from './dom-elements.js';
   

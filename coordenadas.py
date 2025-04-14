@@ -16,6 +16,6 @@ coordenadas = {
     'distrito':        {'page': 1, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
     'provincia':       {'page': 1, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
     'departamento':    {'page': 1, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
-    'ubigeo':          {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
+    # 'ubigeo':          {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
     'firma_img':       {'page': 1, 'pos': (400, 620)},
 }

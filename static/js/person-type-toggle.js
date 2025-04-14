@@ -2,7 +2,7 @@ import {
     tipoPersona, grupoNatural, grupoJuridica,
     // Persona Natural
     dniInput, nombreInput, apellidoInput, direccionInput,
-    distritoInput, provinciaInput, departamentoInput, ubigeoInput,
+    distritoInput, provinciaInput, departamentoInput, 
     // Persona Jurídica
     rucInput, razonSocialInput, direccionJurInput,
     distritoJurInput, provinciaJurInput, departamentoJurInput,
@@ -48,7 +48,7 @@ export function setupPersonTypeToggle() {
 
             limpiarCampos([
                 dniInput, nombreInput, apellidoInput, direccionInput,
-                distritoInput, provinciaInput, departamentoInput, ubigeoInput
+                distritoInput, provinciaInput, departamentoInput, 
             ]);
 
         } else {
@@ -57,7 +57,7 @@ export function setupPersonTypeToggle() {
 
             limpiarCampos([
                 dniInput, nombreInput, apellidoInput, direccionInput,
-                distritoInput, provinciaInput, departamentoInput, ubigeoInput,
+                distritoInput, provinciaInput, departamentoInput, 
                 rucInput, razonSocialInput, direccionJurInput,
                 distritoJurInput, provinciaJurInput, departamentoJurInput,
                 repLegalInput, dniRepLegalInput

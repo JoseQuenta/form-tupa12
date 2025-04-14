@@ -13,6 +13,9 @@ import { limpiarFirmaBtn } from './dom-elements.js'; // Asegúrate que exportas 
 import { buscarDniBtn, buscarRucBtn } from './dom-elements.js';
 import { btnLimpiar } from './dom-elements.js';
 
+import { btnEditar } from './dom-elements.js'; // Asegúrate que exportas esto
+import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
+
 import {
     dniInput,
     nombreInput,
@@ -21,7 +24,6 @@ import {
     distritoInput,
     provinciaInput,
     departamentoInput,
-    ubigeoInput,
     rucInput,
     razonSocialInput,
     direccionJurInput,
@@ -90,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLimpiar.addEventListener('click', () => {
             const allFields = [
                 dniInput, nombreInput, apellidoInput, direccionInput, distritoInput,
-                provinciaInput, departamentoInput, ubigeoInput, rucInput, razonSocialInput,
+                provinciaInput, departamentoInput, rucInput, razonSocialInput,
                 direccionJurInput, distritoJurInput, provinciaJurInput, departamentoJurInput,
                 repLegalInput, dniRepLegalInput, telefonoInput, correoInput, 
                 numeroPagoInput, fechaPagoInput, placaInput, cargaUtilInput
@@ -109,6 +111,20 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("btnSiguiente").style.display = "inline-block";
             document.getElementById("btnAnterior").style.display = "none";
             document.getElementById("btnEnviar").style.display = "none";
+        });
+    }
+
+    if (btnEditar) {
+        btnEditar.addEventListener("click", () => {
+            document.getElementById("pantallaExito").style.display = "none";
+            document.getElementById("pdfForm").style.display = "block";
+            // Puedes mantener los datos o ir a una sección específica
+        });
+    }
+    
+    if (btnNuevo) {
+        btnNuevo.addEventListener("click", () => {
+            window.location.reload(); // recarga todo y limpia
         });
     }
 });

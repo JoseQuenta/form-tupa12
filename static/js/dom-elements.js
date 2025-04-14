@@ -10,7 +10,7 @@ export const direccionInput = document.getElementById("direccion_h1");
 export const distritoInput = document.getElementById("distrito");
 export const provinciaInput = document.getElementById("provincia");
 export const departamentoInput = document.getElementById("departamento");
-export const ubigeoInput = document.getElementById("ubigeo");
+// export const ubigeoInput = document.getElementById("ubigeo");
 
 // Persona Jurídica
 export const rucInput = document.getElementById("ruc");
@@ -56,3 +56,9 @@ export const limpiarFirmaBtn = document.getElementById("limpiarFirmaBtn");
 
 export const repLegalInput = document.getElementById("rep_legal");
 export const dniRepLegalInput = document.getElementById("dni_rep_legal");
+
+
+export const btnEditar = document.getElementById("btnEditar");
+export const btnNuevo = document.getElementById("btnNuevoRegistro");
+
+export const firmaError = document.getElementById("firmaError");
