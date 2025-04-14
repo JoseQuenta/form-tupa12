@@ -5,154 +5,236 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario con Firma</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
     <h1>TUPA 12</h1>
 
     <form id="pdfForm" action="/submit" method="post" enctype="multipart/form-data">
-        <h2>Datos Generales / Hoja 1</h2>
 
-        <div class="form-group">
-            <label for="dni">DNI:</label>
-            <div class="input-group">
-                <input type="tel" id="dni" name="dni" maxlength="8" pattern="\d{8}" inputmode="numeric" required>
-                <button type="button" onclick="buscarDni()">Buscar</button>
-                <span id="status"></span>
+        <!-- Página 1 - Datos Generales -->
+        <div id="pagina1">
+            <h2>Datos Generales / Hoja 1</h2>
+
+            <div class="form-group">
+                <label for="tipo_persona">Tipo de Persona:</label>
+                <select id="tipo_persona" name="tipo_persona" required>
+                    <option value="">Seleccione</option>
+                    <option value="natural">Persona Natural</option>
+                    <option value="juridica">Persona Jurídica</option>
+                </select>
             </div>
-            <span id="error" class="error-message"></span>
-        </div>
 
-        <div class="form-group">
-            <label for="nombre">Nombre(s):</label>
-            <input type="text" id="nombre" name="nombre" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+            <!-- Datos para Persona Natural -->
+            <div id="grupo_natural" style="display:none;">
+                <div class="form-group">
+                    <label for="dni">DNI:</label>
+                    <div class="input-group">
+                        <input type="tel" id="dni" name="dni" maxlength="8" pattern="\d{8}" inputmode="numeric"
+                            required>
+                        <button type="button" id="buscarDniBtn">Buscar</button>
+                        <span id="status"></span>
+                    </div>
+                    <span id="dniError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="apellido">Apellido(s):</label>
-            <input type="text" id="apellido" name="apellido" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="nombre">Nombre(s):</label>
+                    <input type="text" id="nombre" name="nombre" class="uppercase-input">
+                    <span id="nombreError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="direccion_h1">Dirección:</label>
-            <input type="text" id="direccion_h1" name="direccion_h1" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido(s):</label>
+                    <input type="text" id="apellido" name="apellido" class="uppercase-input">
+                    <span id="apellidoError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="distrito">Distrito:</label>
-            <input type="text" id="distrito" name="distrito" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="direccion_h1">Dirección:</label>
+                    <input type="text" id="direccion_h1" name="direccion_h1" class="uppercase-input">
+                    <span id="direccion_h1Error" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="provincia">Provincia:</label>
-            <input type="text" id="provincia" name="provincia" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="distrito">Distrito:</label>
+                    <input type="text" id="distrito" name="distrito" class="uppercase-input">
+                    <span id="distritoError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="departamento">Departamento:</label>
-            <input type="text" id="departamento" name="departamento" class="uppercase-input">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="provincia">Provincia:</label>
+                    <input type="text" id="provincia" name="provincia" class="uppercase-input">
+                    <span id="provinciaError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="ubigeo">Ubigeo:</label>
-            <input type="tel" id="ubigeo" name="ubigeo" inputmode="numeric" pattern="\d+">
-            <span class="error-message"></span>
-        </div>
+                <div class="form-group">
+                    <label for="departamento">Departamento:</label>
+                    <input type="text" id="departamento" name="departamento" class="uppercase-input">
+                    <span id="departamentoError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" maxlength="9" pattern="9\d{8}" placeholder="9XXXXXXXX"
-                inputmode="numeric">
-            <span class="error-message"></span>
-        </div>
+                <!-- <div class="form-group">
+                    <label for="ubigeo">Ubigeo:</label>
+                    <input type="tel" id="ubigeo" name="ubigeo" inputmode="numeric" pattern="\d+">
+                    <span id="ubigeoError" class="error-message"></span>
+                </div> -->
+            </div>
 
+            <!-- Datos para Persona Jurídica -->
+            <div id="grupo_juridica" style="display:none;">
+                <div class="form-group">
+                    <label for="ruc">RUC:</label>
+                    <div class="input-group">
+                        <input type="tel" id="ruc" name="ruc" maxlength="11" pattern="\d{11}" inputmode="numeric">
+                        <button type="button" id="buscarRucBtn">Buscar</button>
+                        <span id="statusRuc"></span>
+                    </div>
+                </div>
 
+                <div class="form-group">
+                    <label for="razon_social">Razón Social:</label>
+                    <input type="text" id="razon_social" name="razon_social" class="uppercase-input">
+                    <span id="razonSocialError" class="error-message"></span>
+                </div>
 
-        <div class="form-group">
-            <label for="correo">Correo electrónico:</label>
-            <input type="email" id="correo" name="correo">
-            <span class="error-message"></span>
-            <div class="checkbox-container">
-                <input type="checkbox" id="sinCorreo" name="sinCorreo">
-                <label for="sinCorreo">No tengo correo</label>
+                <div class="form-group">
+                    <label for="rep_legal">Representante Legal:</label>
+                    <input type="text" id="rep_legal" name="rep_legal" class="uppercase-input">
+                    <span id="repLegalError" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="dni_rep_legal">DNI Representante Legal:</label>
+                    <input type="tel" id="dni_rep_legal" name="dni_rep_legal" maxlength="8" pattern="\d{8}"
+                        inputmode="numeric">
+                    <span id="dniRepLegalError" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="direccion_jur">Dirección de la Empresa:</label>
+                    <input type="text" id="direccion_jur" name="direccion_jur" class="uppercase-input">
+                    <span id="direccionJurError" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="distrito_jur">Distrito:</label>
+                    <input type="text" id="distrito_jur" name="distrito_jur" class="uppercase-input">
+                    <span id="distritoJurError" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="provincia_jur">Provincia:</label>
+                    <input type="text" id="provincia_jur" name="provincia_jur" class="uppercase-input">
+                    <span id="provinciaJurError" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="departamento_jur">Departamento:</label>
+                    <input type="text" id="departamento_jur" name="departamento_jur" class="uppercase-input">
+                    <span id="departamentoJurError" class="error-message"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" maxlength="9" pattern="9\d{8}" placeholder="9XXXXXXXX"
+                    inputmode="numeric">
+                <span id="telefonoError" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo">
+                <span id="correoError" class="error-message"></span>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="sinCorreo" name="sinCorreo">
+                    <label for="sinCorreo">No tengo correo</label>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="numero_pago">Número de Pago:</label>
-            <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
-            <span class="error-message"></span>
-        </div>
 
-        <div class="form-group">
-            <label for="fecha_pago">Fecha de Pago:</label>
-            <input type="date" id="fecha_pago" name="fecha_pago">
-            <span class="error-message"></span>
-        </div>
+        <!-- Página 2 - Datos del vehículo -->
+        <div id="pagina2" style="display:none;">
+            <h2>Datos del vehículo a habilitar</h2>
 
-        <div class="form-group">
-            <label for="placa">Placa:</label>
-            <input type="text" id="placa" name="placa" pattern="[A-Za-z0-9]{3}-?[A-Za-z0-9]{3}"
-                placeholder="ABC-123 o ABC-D4E" class="uppercase-input" maxlength="7"> <span
-                class="error-message"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="carga_util">Carga útil (kg):</label>
-            <input type="tel" id="carga_util" name="carga_util" pattern="\d+" inputmode="numeric">
-            <span class="error-message"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="lugar_auditoria">Lugar Auditoría:</label>
-            <select id="lugar_auditoria" name="lugar_auditoria">
-                <option value="" disabled>Seleccione un lugar</option>
-                <option value="camana">CAMANÁ</option>
-                <option value="chimbote">CHIMBOTE</option>
-                <option value="huancayo">HUANCAYO</option>
-                <option value="ilo">ILO</option>
-                <option value="iquitos">IQUITOS</option>
-                <option value="madre_de_dios">MADRE DE DIOS</option>
-                <option value="paita">PAITA</option>
-                <option value="pisco">PISCO</option>
-                <option value="puno">PUNO</option>
-                <option value="sechura">SECHURA</option>
-                <option value="tarapoto">TARAPOTO</option>
-                <option value="tumbes">TUMBES</option>
-                <option value="tacna" selected>TACNA</option>
-            </select>
-            <span class="error-message"></span>
-        </div>
-
-        <h2>Firma</h2>
-        <div class="form-group">
-            <label for="firma">Firme aquí:</label>
-            <div class="firma-container"> <canvas id="firma" width="300" height="150"></canvas> <button type="button"
-                    onclick="limpiarFirma()">Limpiar Firma</button>
+            <div class="form-group">
+                <label for="numero_pago">Número de Pago:</label>
+                <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
+                <span id="numeroPagoError" class="error-message"></span>
             </div>
-            <input type="hidden" name="firma_img" id="firma_img">
-            <span class="error-message"></span>
+
+            <div class="form-group">
+                <label for="fecha_pago">Fecha de Pago:</label>
+                <input type="date" id="fecha_pago" name="fecha_pago">
+                <span id="fechaPagoError" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="placa">Placa:</label>
+                <input type="text" id="placa" name="placa" pattern="[A-Za-z0-9]{3}-?[A-Za-z0-9]{3}"
+                    placeholder="ABC-123 o ABC-D4E" class="uppercase-input" maxlength="7">
+                <span id="placaError" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="carga_util">Carga útil (kg):</label>
+                <input type="tel" id="carga_util" name="carga_util" pattern="\d+" inputmode="numeric">
+                <span id="cargaUtilError" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="lugar_auditoria">Lugar Auditoría:</label>
+                <select id="lugar_auditoria" name="lugar_auditoria">
+                    <option value="" disabled>Seleccione un lugar</option>
+                    <option value="camana">CAMANÁ</option>
+                    <option value="chimbote">CHIMBOTE</option>
+                    <option value="huancayo">HUANCAYO</option>
+                    <option value="ilo">ILO</option>
+                    <option value="iquitos">IQUITOS</option>
+                    <option value="madre_de_dios">MADRE DE DIOS</option>
+                    <option value="paita">PAITA</option>
+                    <option value="pisco">PISCO</option>
+                    <option value="puno">PUNO</option>
+                    <option value="sechura">SECHURA</option>
+                    <option value="tarapoto">TARAPOTO</option>
+                    <option value="tumbes">TUMBES</option>
+                    <option value="tacna" selected>TACNA</option>
+                </select>
+                <span id="lugarAuditoriaError" class="error-message"></span>
+            </div>
+
+            <h2>Firma</h2>
+            <div class="form-group">
+                <label for="firma">Firme aquí:</label>
+                <div class="firma-container">
+                    <canvas id="firma" width="300" height="150"></canvas>
+                    <button type="button" id="limpiarFirmaBtn">Limpiar Firma</button>
+                </div>
+                <input type="hidden" name="firma_img" id="firma_img">
+                <span id="firmaError" class="error-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="adjuntos">Adjuntar voucher, tarjeta de propiedad:</label>
+                <input type="file" id="adjuntos" name="adjuntos" multiple>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="adjuntos">Adjuntar voucher, tarjeta de propiedad:</label>
-            <input type="file" id="adjuntos" name="adjuntos" multiple>
-        </div>
-
-
+        <!-- Navegación -->
         <div class="form-actions">
-            <button type="submit">Generar PDF</button>
+            <button type="button" id="btnLimpiar">Limpiar</button>
+            <button type="button" id="btnSiguiente">Siguiente</button>
+            <button type="button" id="btnAnterior" style="display:none;">Anterior</button>
+            <button type="submit" id="btnEnviar" style="display:none;">Generar PDF</button>
         </div>
-
     </form>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+    <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>

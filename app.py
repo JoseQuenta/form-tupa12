@@ -1,7 +1,7 @@
 import os
 import base64
 import fitz  # PyMuPDF
-from flask import Flask, request, render_template, send_file, abort
+from flask import Flask, request, render_template, send_file, abort, jsonify
 from werkzeug.utils import secure_filename
 from io import BytesIO
 from dotenv import load_dotenv
@@ -9,6 +9,8 @@ import resend
 
 from coordenadas import coordenadas
 from dni_api import consultar_dni  # Importa la función desde tu módulo separado
+
+from ruc_api import consultar_ruc, consultar_representante_legal
 
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
@@ -57,6 +59,8 @@ def submit_form():
             form_data['provincia']    = domi.get('provincia', form_data.get('provincia'))
             form_data['departamento'] = domi.get('departamento', form_data.get('departamento'))
             form_data['ubigeo']       = domi.get('ubigeo', form_data.get('ubigeo'))
+
+
 
     # 4. Generar PDF
     if not os.path.exists(TEMPLATE_PDF_PATH):
@@ -136,6 +140,23 @@ def limpiar_pdf_temp(response):
         except Exception as e:
             print("No se pudo eliminar PDF temporal:", e)
     return response
+
+@app.route("/api/ruc/<ruc>", methods=["GET"])
+def api_ruc(ruc):
+    datos_ruc = consultar_ruc(ruc)
+    datos_rep = consultar_representante_legal(ruc)
+
+    if datos_ruc.get("success") and datos_rep.get("success"):
+        representante = datos_rep.get("data", [])
+        if representante:
+            # Solo tomamos el primero si hay varios
+            datos_ruc["representante_legal"] = representante[0].get("nombre", "")
+            datos_ruc["dni_representante"] = representante[0].get("dni", "")
+        else:
+            datos_ruc["representante_legal"] = ""
+            datos_ruc["dni_representante"] = ""
+
+    return jsonify({"success": True, "datos": datos_ruc})
 
 
 @app.route('/api/dni/<dni>')
