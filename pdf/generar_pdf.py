@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import base64
 import fitz  # PyMuPDF
@@ -74,19 +75,39 @@ def generar_pdf(form_data, archivos):
         # 💡 Unir nombres y apellidos para uso personalizado
         if tipo_persona == "natural" and form_data.get("nombre") and form_data.get("apellido"):
             form_data["nombre_completo"] = f"{form_data['nombre']} {form_data['apellido']}"
+            form_data["nombre_completo2"] = form_data["nombre_completo"].title()
+            
+            
+            
+        
+        form_data["direccion_h2"] = form_data.get("direccion_h1")
 
         # 💬 Mensaje personalizado
         placa = form_data.get("placa", "").upper()
-        ciudad = form_data.get("departamento", "la ciudad").title()
-        form_data["mensaje_solicitud"] = f"Solicito la obtención del Protocolo Técnico de Habilitación Sanitaria de mi transporte de placa {placa} en {ciudad}."
-        form_data["titulo"] = f"TUPA 12 - {placa} - {ciudad}"
+        lugar_auditoria = form_data.get("lugar_auditoria").title()
+        form_data["fundamentos_de_solicitud1"] = f"Solicito la obtención del Protocolo Técnico de Habilitación Sanitaria de mi transporte de placa {placa}"
+        
+        form_data["fundamentos_de_solicitud2"] = f"Solicito pasar auditoria en la ciudad de {lugar_auditoria} y recibir el PTH en mi correo electrónico."
+        
+        form_data["titulo"] = f"TUPA 12 - {placa}"
         form_data["mensaje_requisitos1"] = "Solicitud - Formulario TUPA 12"
         form_data["mensaje_requisitos2"] = "Copia de tarjeta de propiedad del vehículo"
         form_data["mensaje_requisitos3"] = "Programa BPM"
         form_data["mensaje_requisitos4"] = "Programa HS"
-        form_data["mensaje_requisitos5"] = "Voucher de pago por S/ 550.70"
-        form_data["mensaje_requisitos0"] = f"TUPA 12 - {placa} - {ciudad}"
+        form_data["mensaje_requisitos5"] = "Voucher de pago por S/ 550.90"
 
+        if tipo_persona == "natural":
+            form_data["check_natural"] = "X"
+        elif tipo_persona == "juridica":
+            form_data["check_juridica"] = "X"
+            
+        form_data['dni2'] = form_data.get('dni')
+        
+        form_data['rep_legal2'] = form_data.get('rep_legal')
+        form_data['dni_rep_legal2'] = form_data.get('dni_rep_legal')
+        
+        form_data['fecha_hoy'] = datetime.now().strftime("%d/%m/%Y")
+        
         # Insertar en el PDF
         for key, val in form_data.items():
             if key in campos and val:
