@@ -66,41 +66,46 @@ def submit_form():
         tipo_persona = form_data.get("tipo_persona", "natural").lower()
         coords = coordenadas.get(tipo_persona, {})
 
+        # for key, value in form_data.items():
+        #     if key in coords and value:
+        #         info = coords[key]
+        #         page_num = info['page']
+        #         if 0 <= page_num < len(doc):
+        
+        print("📄 Total de páginas del PDF:", len(doc))
+
         for key, value in form_data.items():
             if key in coords and value:
                 info = coords[key]
                 page_num = info['page']
-                if 0 <= page_num < len(doc):
+
+                if page_num >= len(doc):
+                    print(f"⚠️ Página {page_num} para '{key}' no existe en el PDF. Campo omitido.")
+                    continue
+
+                try:
                     if key == 'firma_img':
-                        try:
-                            sig_data = base64.b64decode(value.split(',')[1])
-                            sig_rect = fitz.Rect(
-                                info['pos'][0], info['pos'][1],
-                                info['pos'][0] + 150, info['pos'][1] + 100
-                            )
-                            doc[page_num].insert_image(sig_rect, stream=sig_data)
-                        except Exception as e:
-                            print("Error al insertar firma:", e)
+                        sig_data = base64.b64decode(value.split(',')[1])
+                        sig_rect = fitz.Rect(
+                            info['pos'][0], info['pos'][1],
+                            info['pos'][0] + 150, info['pos'][1] + 100
+                        )
+                        doc[page_num].insert_image(sig_rect, stream=sig_data)
                     else:
-                        try:
-                            doc[page_num].insert_text(
-                                fitz.Point(*info['pos']),
-                                str(value),
-                                fontsize=info.get('size', 11),
-                                fontname=info.get('font', 'helv')
-                            )
-                        except Exception as e:
-                            print(f"No se pudo insertar '{key}': {e}")
+                        doc[page_num].insert_text(
+                            fitz.Point(*info['pos']),
+                            str(value),
+                            fontsize=info.get('size', 11),
+                            fontname=info.get('font', 'helv')
+                        )
+                except Exception as e:
+                    print(f"❌ Error insertando '{key}': {e}")
+
 
         placa = form_data.get('placa', 'vehiculo').replace('/', '-').replace(' ', '_')
         nombre_pdf = f"TUPA_12_-_{placa.upper()}.pdf"
         doc.save(nombre_pdf, garbage=4, deflate=True)
         doc.close()
-
-    except Exception as e:
-        print("Error creando el PDF:", e)
-        abort(500, "Error creando PDF")
-
 
     except Exception as e:
         print("Error creando el PDF:", e)

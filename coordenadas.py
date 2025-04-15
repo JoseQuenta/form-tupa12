@@ -1,42 +1,44 @@
-coordenadas = {
-    "natural": {
-        'dni':             {'page': 0, 'pos': (72, 750), 'size': 11, 'font': 'helv'},
-        'nombre':          {'page': 0, 'pos': (72, 730), 'size': 11, 'font': 'helv'},
-        'apellido':        {'page': 0, 'pos': (72, 710), 'size': 11, 'font': 'helv'},
-        'direccion_h1':    {'page': 0, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
-        'telefono':        {'page': 0, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
-        'correo':          {'page': 0, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
-        'numero_pago':     {'page': 0, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
-        'fecha_pago':      {'page': 0, 'pos': (72, 610), 'size': 10, 'font': 'helv'},
-        'placa':           {'page': 1, 'pos': (72, 750), 'size': 10, 'font': 'helv'},
-        'carga_util':      {'page': 1, 'pos': (72, 730), 'size': 10, 'font': 'helv'},
-        'tipo_carroceria': {'page': 1, 'pos': (72, 710), 'size': 10, 'font': 'helv'},
-        'lugar_auditoria': {'page': 1, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
-        'distrito':        {'page': 1, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
-        'provincia':       {'page': 1, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
-        'departamento':    {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
-        'firma_img':       {'page': 1, 'pos': (400, 620)},
-    },
-    "juridica": {
-        'ruc':              {'page': 0, 'pos': (72, 750), 'size': 11, 'font': 'helv'},
-        'razon_social':     {'page': 0, 'pos': (72, 730), 'size': 11, 'font': 'helv'},
-        'rep_legal':        {'page': 0, 'pos': (72, 710), 'size': 11, 'font': 'helv'},
-        'dni_rep_legal':    {'page': 0, 'pos': (72, 690), 'size': 11, 'font': 'helv'},
-        'direccion_jur':    {'page': 0, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
-        'telefono':         {'page': 0, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
-        'correo':           {'page': 0, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
-        'numero_pago':      {'page': 0, 'pos': (72, 610), 'size': 10, 'font': 'helv'},
-        'fecha_pago':       {'page': 0, 'pos': (72, 590), 'size': 10, 'font': 'helv'},
-        'placa':            {'page': 1, 'pos': (72, 750), 'size': 10, 'font': 'helv'},
-        'carga_util':       {'page': 1, 'pos': (72, 730), 'size': 10, 'font': 'helv'},
-        'tipo_carroceria':  {'page': 1, 'pos': (72, 710), 'size': 10, 'font': 'helv'},
-        'lugar_auditoria':  {'page': 1, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
-        'distrito_jur':     {'page': 1, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
-        'provincia_jur':    {'page': 1, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
-        'departamento_jur': {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
-        'firma_img':        {'page': 1, 'pos': (400, 620)},
-    }
-}
+# coordenadas = {
+#     "natural": {
+#         'dni':             {'page': 0, 'pos': (72, 750), 'size': 11, 'font': 'helv'},
+#         'nombre':          {'page': 0, 'pos': (72, 730), 'size': 11, 'font': 'helv'},
+#         'apellido':        {'page': 0, 'pos': (72, 710), 'size': 11, 'font': 'helv'},
+#         'direccion_h1':    {'page': 0, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
+#         'telefono':        {'page': 0, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
+#         'correo':          {'page': 0, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
+#         'numero_pago':     {'page': 0, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
+#         'fecha_pago':      {'page': 0, 'pos': (72, 610), 'size': 10, 'font': 'helv'},
+#         'placa':           {'page': 1, 'pos': (72, 750), 'size': 10, 'font': 'helv'},
+#         'carga_util':      {'page': 1, 'pos': (72, 730), 'size': 10, 'font': 'helv'},
+#         'tipo_carroceria': {'page': 1, 'pos': (72, 710), 'size': 10, 'font': 'helv'},
+#         'lugar_auditoria': {'page': 1, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
+#         'distrito':        {'page': 1, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
+#         'provincia':       {'page': 1, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
+#         'departamento':    {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
+#         'firma_img':       {'page': 1, 'pos': (400, 620)},
+#     },
+#     "juridica": {
+#         'ruc':              {'page': 0, 'pos': (72, 750), 'size': 11, 'font': 'helv'},
+#         'razon_social':     {'page': 0, 'pos': (72, 730), 'size': 11, 'font': 'helv'},
+#         'rep_legal':        {'page': 0, 'pos': (72, 710), 'size': 11, 'font': 'helv'},
+#         'dni_rep_legal':    {'page': 0, 'pos': (72, 690), 'size': 11, 'font': 'helv'},
+#         'direccion_jur':    {'page': 0, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
+#         'telefono':         {'page': 0, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
+#         'correo':           {'page': 0, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
+#         'numero_pago':      {'page': 0, 'pos': (72, 610), 'size': 10, 'font': 'helv'},
+#         'fecha_pago':       {'page': 0, 'pos': (72, 590), 'size': 10, 'font': 'helv'},
+#         'placa':            {'page': 1, 'pos': (72, 750), 'size': 10, 'font': 'helv'},
+#         'carga_util':       {'page': 1, 'pos': (72, 730), 'size': 10, 'font': 'helv'},
+#         'tipo_carroceria':  {'page': 1, 'pos': (72, 710), 'size': 10, 'font': 'helv'},
+#         'lugar_auditoria':  {'page': 1, 'pos': (72, 690), 'size': 10, 'font': 'helv'},
+#         'distrito_jur':     {'page': 1, 'pos': (72, 670), 'size': 10, 'font': 'helv'},
+#         'provincia_jur':    {'page': 1, 'pos': (72, 650), 'size': 10, 'font': 'helv'},
+#         'departamento_jur': {'page': 1, 'pos': (72, 630), 'size': 10, 'font': 'helv'},
+#         'firma_img':        {'page': 1, 'pos': (400, 620)},
+#     }
+# }
+
+
 
 # coordenadas = {
 #     "natural": {
@@ -118,3 +120,30 @@ coordenadas = {
 #         'firma_img':              {'page': 1, 'pos': (400, 620)},
 #     }
 # }
+
+
+coordenadas = {
+    "natural": {
+        'dni':             {'page': 0, 'pos': (200, 215), 'size': 10, 'font': 'helv'},
+        'nombre':          {'page': 0, 'pos': (200, 198), 'size': 10, 'font': 'helv'},
+        'apellido':        {'page': 0, 'pos': (200, 181), 'size': 10, 'font': 'helv'},
+        'direccion_h1':    {'page': 0, 'pos': (200, 130), 'size': 10, 'font': 'helv'},
+        'telefono':        {'page': 0, 'pos': (200, 75), 'size': 10, 'font': 'helv'},
+        'correo':          {'page': 0, 'pos': (420, 75), 'size': 10, 'font': 'helv'},
+        'numero_pago':     {'page': 0, 'pos': (200, 40), 'size': 10, 'font': 'helv'},
+        'fecha_pago':      {'page': 0, 'pos': (420, 40), 'size': 10, 'font': 'helv'},
+        'check_natural':   {'page': 0, 'pos': (72, 235), 'size': 16, 'font': 'helv'},
+    },
+    "juridica": {
+        'ruc':              {'page': 0, 'pos': (200, 215), 'size': 10, 'font': 'helv'},
+        'razon_social':     {'page': 0, 'pos': (200, 198), 'size': 10, 'font': 'helv'},
+        'rep_legal':        {'page': 0, 'pos': (200, 163), 'size': 10, 'font': 'helv'},
+        'dni_rep_legal':    {'page': 0, 'pos': (200, 146), 'size': 10, 'font': 'helv'},
+        'direccion_jur':    {'page': 0, 'pos': (200, 130), 'size': 10, 'font': 'helv'},
+        'telefono':         {'page': 0, 'pos': (200, 75), 'size': 10, 'font': 'helv'},
+        'correo':           {'page': 0, 'pos': (420, 75), 'size': 10, 'font': 'helv'},
+        'numero_pago':      {'page': 0, 'pos': (200, 40), 'size': 10, 'font': 'helv'},
+        'fecha_pago':       {'page': 0, 'pos': (420, 40), 'size': 10, 'font': 'helv'},
+        'check_juridica':   {'page': 0, 'pos': (270, 235), 'size': 16, 'font': 'helv'},
+    }
+}
