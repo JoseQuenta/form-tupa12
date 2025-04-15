@@ -33,7 +33,8 @@ import {
     telefonoInput, correoInput, sinCorreoCheckbox,
 
     // Página 2
-    numeroPagoInput
+    numeroPagoInput,
+    placaInput
 } from './dom-elements.js';
 
 function validarPagina1() {
@@ -91,7 +92,7 @@ export function setupNavigation() {
             btnEnviar.style.display = "inline-block";
 
             // ✅ Enfocar el campo 'número de pago'
-            if (numeroPagoInput) numeroPagoInput.focus();
+            if (placaInput) placaInput.focus();
         });
     }
 

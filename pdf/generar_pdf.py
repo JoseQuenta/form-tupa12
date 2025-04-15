@@ -13,13 +13,28 @@ from api.mailer import enviar_correo_con_adjuntos
 TEMPLATE_PDF_PATH = "plantilla_A4.pdf"
 
 def sobrescribir_si_vacio(data, campo, valor):
-    if not data.get(campo):  # Si está vacío, None o ""
+    if not data.get(campo):
         data[campo] = valor
+
+def insertar_texto_adaptado(doc, campo, texto):
+    texto = str(texto)
+    pagina = campo["page"]
+    punto = fitz.Point(*campo["pos"])
+    tamano_base = campo.get("size", 11)
+    longitud_limite = campo.get("longitud", 40)
+    tamano_para_largo = campo.get("size_long", tamano_base - 1)
+    fontsize = tamano_para_largo if len(texto) > longitud_limite else tamano_base
+
+    doc[pagina].insert_text(
+        punto,
+        texto,
+        fontsize=fontsize,
+        fontname=campo.get("font", "helv")
+    )
 
 def generar_pdf(form_data, archivos):
     lista_adjuntos = []
 
-    # Guardar adjuntos en base64
     for archivo in archivos:
         if archivo and archivo.filename:
             filename = secure_filename(archivo.filename)
@@ -32,7 +47,6 @@ def generar_pdf(form_data, archivos):
 
     tipo_persona = form_data.get("tipo_persona", "natural").lower()
 
-    # Enriquecer datos de PN (persona natural)
     if tipo_persona == "natural" and form_data.get('dni'):
         datos_dni = consultar_dni(form_data['dni'])
         if datos_dni:
@@ -45,7 +59,6 @@ def generar_pdf(form_data, archivos):
             sobrescribir_si_vacio(form_data, 'provincia', dom.get('provincia'))
             sobrescribir_si_vacio(form_data, 'departamento', dom.get('departamento'))
 
-    # Enriquecer datos de PJ (persona jurídica)
     elif tipo_persona == "juridica" and form_data.get('ruc'):
         datos_ruc = consultar_ruc(form_data['ruc'])
         datos_rep = consultar_representante_legal(form_data['ruc'])
@@ -62,53 +75,64 @@ def generar_pdf(form_data, archivos):
             sobrescribir_si_vacio(form_data, 'rep_legal', rep.get("nombre"))
             sobrescribir_si_vacio(form_data, 'dni_rep_legal', rep.get("dni"))
 
-    # Verificar existencia de plantilla
     if not os.path.exists(TEMPLATE_PDF_PATH):
         abort(500, "No se encuentra la plantilla PDF")
 
     try:
         doc = fitz.open(TEMPLATE_PDF_PATH)
         campos = coordenadas.get(tipo_persona, {})
-
         print(f"📄 Total de páginas del PDF: {len(doc)}")
 
-        # 💡 Unir nombres y apellidos para uso personalizado
         if tipo_persona == "natural" and form_data.get("nombre") and form_data.get("apellido"):
             form_data["nombre_completo"] = f"{form_data['nombre']} {form_data['apellido']}"
             form_data["nombre_completo2"] = form_data["nombre_completo"].title()
-            
-            
-            
-        
-        form_data["direccion_h2"] = form_data.get("direccion_h1")
+            form_data["nombre_completo3"] = form_data["nombre_completo"].title()
+            form_data["nombre_completo4"] = form_data["nombre_completo"].title()
 
-        # 💬 Mensaje personalizado
+        form_data["direccion_h2"] = form_data.get("direccion_h1")
         placa = form_data.get("placa", "").upper()
         lugar_auditoria = form_data.get("lugar_auditoria").title()
         form_data["fundamentos_de_solicitud1"] = f"Solicito la obtención del Protocolo Técnico de Habilitación Sanitaria de mi transporte de placa {placa}"
-        
         form_data["fundamentos_de_solicitud2"] = f"Solicito pasar auditoria en la ciudad de {lugar_auditoria} y recibir el PTH en mi correo electrónico."
-        
         form_data["titulo"] = f"TUPA 12 - {placa}"
         form_data["mensaje_requisitos1"] = "Solicitud - Formulario TUPA 12"
         form_data["mensaje_requisitos2"] = "Copia de tarjeta de propiedad del vehículo"
         form_data["mensaje_requisitos3"] = "Programa BPM"
         form_data["mensaje_requisitos4"] = "Programa HS"
         form_data["mensaje_requisitos5"] = "Voucher de pago por S/ 550.90"
+        form_data["placa2"] = form_data.get("placa")
+        form_data["placa3"] = form_data.get("placa")
+        form_data["placa4"] = form_data.get("placa")
+        
 
         if tipo_persona == "natural":
             form_data["check_natural"] = "X"
         elif tipo_persona == "juridica":
             form_data["check_juridica"] = "X"
-            
+
         form_data['dni2'] = form_data.get('dni')
-        
         form_data['rep_legal2'] = form_data.get('rep_legal')
         form_data['dni_rep_legal2'] = form_data.get('dni_rep_legal')
-        
         form_data['fecha_hoy'] = datetime.now().strftime("%d/%m/%Y")
         
-        # Insertar en el PDF
+        form_data['razon_social2'] = form_data.get('razon_social', '').title()
+        form_data['razon_social3'] = form_data.get('razon_social', '').title()
+        
+        # Procesar tipo de carrocería para marcar los checks correctos
+        tipo_carroceria = form_data.get("tipo_carroceria", "")
+
+        if tipo_carroceria == "Furgón Isotérmico":
+            form_data["check_isotermica"] = "X"
+        elif tipo_carroceria == "Furgón Frigorífico":
+            form_data["check_fria"] = "X"
+        elif tipo_carroceria == "Otros":
+            form_data["otros_carroceria"] = form_data.get("tipo_carroceria_otro", "").strip()
+
+        form_data["carga_util_texto"] = form_data.get("carga_util", "").strip()
+
+
+
+
         for key, val in form_data.items():
             if key in campos and val:
                 campo = campos[key]
@@ -126,16 +150,10 @@ def generar_pdf(form_data, archivos):
                         )
                         doc[page].insert_image(rect, stream=image_data)
                     else:
-                        doc[page].insert_text(
-                            fitz.Point(*campo["pos"]),
-                            str(val),
-                            fontsize=campo.get("size", 11),
-                            fontname=campo.get("font", "helv")
-                        )
+                        insertar_texto_adaptado(doc, campo, val)
                 except Exception as e:
                     print(f"❌ Error insertando '{key}': {e}")
 
-        # Guardar PDF generado
         nombre_archivo = f"TUPA_12_-_{placa.replace('/', '-').replace(' ', '_')}.pdf"
         doc.save(nombre_archivo, garbage=4, deflate=True)
         doc.close()
@@ -143,7 +161,6 @@ def generar_pdf(form_data, archivos):
     except Exception as e:
         abort(500, f"Error creando el PDF: {e}")
 
-    # Adjuntar PDF
     try:
         with open(nombre_archivo, "rb") as f:
             lista_adjuntos.append({

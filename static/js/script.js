@@ -130,4 +130,24 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.reload(); // recarga todo y limpia
         });
     }
+
+    // const selectCarroceria = document.getElementById("carroceria_select");
+    // const campoOtro = document.getElementById("campo_carroceria_otro");
+
+    // selectCarroceria.addEventListener("change", function () {
+    //     if (this.value === "Otros") {
+    //         campoOtro.style.display = "block";
+    //     } else {
+    //         campoOtro.style.display = "none";
+    //         // Limpiar si el usuario cambia de idea
+    //         document.getElementById("tipo_carroceria_otro").value = "";
+    //     }
+    // });
+
+    flatpickr("#fecha_pago", {
+        dateFormat: "d/m/Y", // formato sudamericano
+        locale: "es",        // idioma en español (ver paso extra abajo)
+        allowInput: true     // permite escribir manualmente si lo deseas
+    });
+    
 });
