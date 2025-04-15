@@ -18,6 +18,8 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
+// import { setupFlatpickr } from './setup-flatpickr.js';
+
 import {
     dniInput,
     nombreInput,
@@ -64,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFirmaCanvas();
     setupFormSubmission();
     setupTipoCarroceria();
+    // setupFlatpickr();
 
     if (buscarDniBtn) {
         buscarDniBtn.addEventListener('click', buscarDni);
@@ -144,10 +147,5 @@ document.addEventListener("DOMContentLoaded", () => {
     //     }
     // });
 
-    flatpickr("#fecha_pago", {
-        dateFormat: "d/m/Y", // formato sudamericano
-        locale: "es",        // idioma en español (ver paso extra abajo)
-        allowInput: true     // permite escribir manualmente si lo deseas
-    });
-    
+
 });

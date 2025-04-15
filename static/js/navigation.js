@@ -36,6 +36,7 @@ import {
     numeroPagoInput,
     placaInput
 } from './dom-elements.js';
+// import { setupFlatpickr } from './setup-flatpickr.js';
 
 function validarPagina1() {
     const tipo = tipoPersona.value;
@@ -90,6 +91,8 @@ export function setupNavigation() {
             btnSiguiente.style.display = "none";
             btnAnterior.style.display = "inline-block";
             btnEnviar.style.display = "inline-block";
+
+            // setupFlatpickr();
 
             // ✅ Enfocar el campo 'número de pago'
             if (placaInput) placaInput.focus();

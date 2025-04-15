@@ -201,7 +201,7 @@
 
             <div class="form-group">
                 <label for="fecha_pago">Fecha de Pago:</label>
-                <input type="date" id="fecha_pago" name="fecha_pago">
+                <input type="text" id="fecha_pago" name="fecha_pago" placeholder="dd/mm/yyyy">
                 <span id="fechaPagoError" class="error-message"></span>
             </div>
 
@@ -262,9 +262,21 @@
         </div>
     </div>
 
-
-    <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script>
+        flatpickr("#fecha_pago", {
+            dateFormat: "d/m/Y",
+            locale: "es", // ¡Esto es lo importante!
+            allowInput: true
+
+
+        });
+    </script>
+
+
+    <!-- Tu script principal -->
+    <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>
