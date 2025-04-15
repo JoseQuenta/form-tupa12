@@ -171,11 +171,11 @@ def generar_pdf(form_data, archivos):
     except Exception as e:
         abort(500, f"Error leyendo el PDF generado: {e}")
 
-    # # Envío opcional (comentado)
-    # if form_data.get("correo"):
-    #     try:
-    #         enviar_correo_con_adjuntos(form_data["correo"], lista_adjuntos)
-    #     except Exception as e:
-    #         print("⚠️ Error al enviar el correo:", e)
+    # Envío opcional (comentado)
+    if form_data.get("correo"):
+        try:
+            enviar_correo_con_adjuntos(form_data["correo"], lista_adjuntos)
+        except Exception as e:
+            print("⚠️ Error al enviar el correo:", e)
 
     return nombre_archivo, lista_adjuntos
