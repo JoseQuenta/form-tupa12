@@ -174,7 +174,7 @@ def generar_pdf(form_data, archivos):
     # Envío opcional (comentado)
     if form_data.get("correo"):
         try:
-            enviar_correo_con_adjuntos(form_data["correo"], lista_adjuntos)
+            enviar_correo_con_adjuntos(form_data["correo"], lista_adjuntos, form_data)
         except Exception as e:
             print("⚠️ Error al enviar el correo:", e)
 
