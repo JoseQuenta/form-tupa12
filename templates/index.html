@@ -187,18 +187,19 @@
 
             <div class="form-group">
                 <label for="carroceria_select">Tipo de Carrocería:</label>
-                <select id="carroceria_select" name="carroceria_select" required>
-                    <option value="">Seleccione una opción</option>
+                <select id="carroceria_select" name="tipo_carroceria">
+                    <option value="">Seleccione</option>
                     <option value="Furgón Frigorífico">Furgón Frigorífico</option>
                     <option value="Furgón Isotérmico">Furgón Isotérmico</option>
                     <option value="Otros">Otros</option>
                 </select>
-
-                <div id="campo_carroceria_otro" style="display: none; margin-top: 10px;">
-                    <label for="carroceria_otro_texto">Especifique:</label>
-                    <input type="text" id="carroceria_otro_texto" name="carroceria_otro_texto" class="uppercase-input">
-                </div>
             </div>
+
+            <div class="form-group" id="campo_carroceria_otro" style="display: none;">
+                <label for="tipo_carroceria_otro">Especifique otro tipo:</label>
+                <input type="text" id="tipo_carroceria_otro" placeholder="Escriba aquí">
+            </div>
+
 
 
             <div class="form-group">

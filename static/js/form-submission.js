@@ -6,7 +6,9 @@ import {
     fechaPagoInput,
     placaInput,
     cargaUtilInput,
-    btnEnviar
+    btnEnviar,
+    carroceriaSelect,
+    campoCarroceriaOtro
 } from './dom-elements.js';
 
 import { setupUppercaseFields } from './uppercase-fields.js';
@@ -22,6 +24,17 @@ function validarPagina2() {
     if (!fechaPagoInput.value.trim()) errores.push("Fecha de pago es obligatoria.");
     if (!placaInput.value.trim()) errores.push("Placa es obligatoria.");
     if (!cargaUtilInput.value.trim()) errores.push("Carga útil es obligatoria.");
+    
+    // ✅ Validación de tipo de carrocería
+    const tipoSeleccionado = carroceriaSelect?.value;
+    const otroTexto = document.getElementById("tipo_carroceria_otro")?.value.trim();
+
+    if (!tipoSeleccionado) {
+        errores.push("Debe seleccionar el tipo de carrocería.");
+    } else if (tipoSeleccionado === "Otros" && !otroTexto) {
+        errores.push("Debe especificar el tipo de carrocería.");
+    }
+    
 
     const blank = document.createElement('canvas');
     blank.width = firmaCanvas.width;
