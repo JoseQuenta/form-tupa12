@@ -237,9 +237,13 @@
                 <span id="firmaError" class="error-message"></span>
             </div>
 
-            <div class="form-group">
-                <label for="adjuntos">Adjuntar voucher, tarjeta de propiedad:</label>
-                <input type="file" id="adjuntos" name="adjuntos" multiple>
+            <div class="form-group dropzone-group">
+                <label for="adjuntos" class="dropzone-label">Adjuntar voucher, tarjeta de propiedad:</label>
+                <div id="dropzone" class="dropzone-area">
+                    <p>Arrastra los archivos aquí o haz clic para seleccionarlos</p>
+                    <input type="file" id="adjuntos" name="adjuntos" multiple>
+                </div>
+                <div id="fileList"></div>
             </div>
         </div>
 

@@ -345,4 +345,40 @@ canvas {
     .uppercase-input {
         text-transform: uppercase;
       }
+
+      .dropzone-group {
+        margin-top: 1rem;
+    }
+    
+    .dropzone-label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dropzone-area {
+        border: 2px dashed #999;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        background-color: #fdfdfd;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        color: #333;
+    }
+    
+    .dropzone-area:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .dropzone-area input[type="file"] {
+        display: none;
+    }
+    
+    #fileList {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #444;
+    }
+    
   }

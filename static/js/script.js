@@ -134,6 +134,39 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+    const dropzone = document.getElementById('dropzone');
+    const input = document.getElementById('adjuntos');
+    const fileList = document.getElementById('fileList');
+
+    dropzone.addEventListener('click', () => input.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('highlight');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('highlight');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        input.files = e.dataTransfer.files;
+        mostrarArchivos(input.files);
+    });
+
+    input.addEventListener('change', () => {
+        mostrarArchivos(input.files);
+    });
+
+    function mostrarArchivos(files) {
+        fileList.innerHTML = "";
+        for (let i = 0; i < files.length; i++) {
+            fileList.innerHTML += `<div>📎 ${files[i].name}</div>`;
+        }
+    }
+
     // const selectCarroceria = document.getElementById("carroceria_select");
     // const campoOtro = document.getElementById("campo_carroceria_otro");
 

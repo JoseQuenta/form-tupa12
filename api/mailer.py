@@ -38,9 +38,12 @@ def enviar_correo_con_adjuntos(destinatario, lista_adjuntos, form_data=None):
     respuesta = resend.Emails.send({
         "from": "onboarding@resend.dev",
         "to": "soycargototal@gmail.com",
+        # "to": "jose.quenta@sanipes.gob.pe",
         "subject": f"Solicitud TUPA 12 - {placa}",
         "html": html,
         "attachments": lista_adjuntos
     })
     print("📧 Correo enviado con Resend:", respuesta)
 
+
+ # "to": "soycargototal@gmail.com",
