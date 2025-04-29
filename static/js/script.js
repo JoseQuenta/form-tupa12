@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
      // ✅ Inicializa flatpickr correctamente
     flatpickr("#fecha_pago", {
         dateFormat: "d/m/Y",
-        locale: Spanish,
+        locale: 'es',
         allowInput: true
     });
 
