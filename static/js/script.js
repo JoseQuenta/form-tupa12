@@ -55,7 +55,6 @@ import {
 } from './dom-elements.js';
 
 import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
-import { Spanish } from "https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js";
 
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
