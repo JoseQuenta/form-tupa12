@@ -54,6 +54,8 @@ import {
 
 } from './dom-elements.js';
 
+import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
+import { Spanish } from "https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js";
 
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -165,7 +167,14 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < files.length; i++) {
             fileList.innerHTML += `<div>📎 ${files[i].name}</div>`;
         }
-    }
+    };
+
+     // ✅ Inicializa flatpickr correctamente
+    flatpickr("#fecha_pago", {
+        dateFormat: "d/m/Y",
+        locale: Spanish,
+        allowInput: true
+    });
 
     // const selectCarroceria = document.getElementById("carroceria_select");
     // const campoOtro = document.getElementById("campo_carroceria_otro");
