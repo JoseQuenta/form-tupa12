@@ -54,8 +54,6 @@ import {
 
 } from './dom-elements.js';
 
-import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
-
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
     setupNavigation();
