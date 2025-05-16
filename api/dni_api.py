@@ -1,7 +1,7 @@
 import requests
 
 DNI_API_URL = "https://miapi.cloud/v1/dni"
-DNI_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMzIsImV4cCI6MTc0NDY2MzU0N30.52IulyaYqiwToUirzupz8NOeemSfRe1wfLq1bPupYgY"
+DNI_API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyODYsImV4cCI6MTc0NzY4ODc0OX0.LoWQrCUTcYFQ7DZW7-eSWFnawf7Ouh-__FTQvE5qnaQ"
 
 def consultar_dni(dni):
     """Consulta datos de una persona por DNI desde la API externa."""
