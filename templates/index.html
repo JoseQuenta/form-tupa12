@@ -193,6 +193,12 @@
 
             </div>
 
+            <!-- Imagen sobre el campo Número de Pago -->
+            <div class="form-group">
+                <img src="{{ url_for('static', filename='img/pagosanipes.png') }}" alt="Pago SANIPES"
+                    style="max-width: 100%; height: auto; margin-bottom: 1rem;">
+            </div>
+
             <div class="form-group">
                 <label for="numero_pago">Número de Pago:</label>
                 <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
