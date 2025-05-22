@@ -188,3 +188,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 });
+
+// --- Imagen expandible ---
+document.addEventListener("DOMContentLoaded", () => {
+    const img = document.querySelector('img[src$="pagosanipes.png"]');
+    if (!img) return;
+
+    img.style.cursor = "zoom-in";
+
+    img.addEventListener("click", function () {
+        // Crea el overlay y la imagen expandida
+        const overlay = document.createElement("div");
+        overlay.className = "img-overlay";
+        overlay.innerHTML = `
+            <div class="img-modal">
+                <button class="img-close" aria-label="Cerrar">&times;</button>
+                <img src="${img.src}" alt="Pago SANIPES" />
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+
+        // Cerrar al hacer click en X o fuera de la imagen
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay || e.target.classList.contains("img-close")) {
+                overlay.remove();
+                document.body.style.overflow = "";
+            }
+        });
+    });
+});
