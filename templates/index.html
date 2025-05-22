@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario con Firma</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flatpickr.min.css') }}">
 </head>
 
 <body>
@@ -272,9 +270,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <!-- Flatpickr ya se inicializa en script.js, no es necesario inicializarlo aquí -->
+    <script src="{{ url_for('static', filename='js/flatpickr.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/es.js') }}"></script>
     <!-- Tu script principal -->
     <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
