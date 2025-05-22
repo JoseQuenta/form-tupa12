@@ -44,12 +44,13 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Botón buscarRucBtn no encontrado en el DOM.");
     }
 
-    const btnLimpiarHtml = document.querySelector('[onclick="limpiarFirma()"]');
-    if (btnLimpiarHtml) {
-        window.limpiarFirma = limpiarFirma;
-    } else {
-        console.warn("No se encontró un botón con onclick='limpiarFirma()'. La función no se expondrá globalmente.");
-    }
+    // Eliminar la siguiente sección obsoleta que busca onclick="limpiarFirma()"
+    // const btnLimpiarHtml = document.querySelector('[onclick="limpiarFirma()"]');
+    // if (btnLimpiarHtml) {
+    //     window.limpiarFirma = limpiarFirma;
+    // } else {
+    //     console.warn("No se encontró un botón con onclick='limpiarFirma()'. La función no se expondrá globalmente.");
+    // }
 
     // Si el botón de limpiar firma está en el DOM, lo inicializamos
     if (limpiarFirmaBtn) {

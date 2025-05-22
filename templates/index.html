@@ -7,6 +7,29 @@
     <title>Formulario con Firma</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Eliminamos el CSS de Flatpickr -->
+    <style>
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -35,7 +58,7 @@
                         <input type="tel" id="dni" name="dni" maxlength="8" pattern="\d{8}" inputmode="numeric"
                             required>
                         <button type="button" id="buscarDniBtn">Buscar</button>
-                        <span id="status"></span>
+                        <span id="status"><span class="spinner" style="display: none;"></span></span>
                     </div>
                     <span id="dniError" class="error-message"></span>
                 </div>
@@ -90,7 +113,7 @@
                     <div class="input-group">
                         <input type="tel" id="ruc" name="ruc" maxlength="11" pattern="\d{11}" inputmode="numeric">
                         <button type="button" id="buscarRucBtn">Buscar</button>
-                        <span id="statusRuc"></span>
+                        <span id="statusRuc"><span class="spinner" style="display: none;"></span></span>
                     </div>
                 </div>
 
