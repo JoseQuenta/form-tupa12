@@ -18,41 +18,6 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
-import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
-
-import {
-    dniInput,
-    nombreInput,
-    apellidoInput,
-    direccionInput,
-    distritoInput,
-    provinciaInput,
-    departamentoInput,
-    rucInput,
-    razonSocialInput,
-    direccionJurInput,
-    distritoJurInput,
-    provinciaJurInput,
-    departamentoJurInput,
-    repLegalInput,
-    dniRepLegalInput,
-    telefonoInput,
-    correoInput,
-
-    numeroPagoInput,
-    fechaPagoInput,
-    placaInput,
-    cargaUtilInput,
-
-    pagina1,
-    pagina2,
-    btnAnterior,
-    btnSiguiente,
-    btnEnviar,
-    sinCorreoCheckbox,
-    tipoPersona,
-
-} from './dom-elements.js';
 
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -285,8 +250,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Flatpickr para fecha de pago ---
     const fechaPagoInput = document.getElementById("fecha_pago");
-    if (fechaPagoInput) {
-        flatpickr(fechaPagoInput, {
+    if (fechaPagoInput && window.flatpickr) {
+        window.flatpickr(fechaPagoInput, {
             dateFormat: "d/m/Y",
             locale: "es", // Usar string para el locale
             maxDate: "today",
