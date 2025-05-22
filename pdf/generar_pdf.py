@@ -93,6 +93,7 @@ def generar_pdf(form_data, archivos):
         if tipo_persona == "juridica":
             rep_nombre_completo = form_data.get("rep_nombre_completo")
             if rep_nombre_completo:
+                form_data["rep_legal"] = rep_nombre_completo
                 form_data["rep_legal2"] = rep_nombre_completo
             else:
                 form_data["rep_legal2"] = form_data.get("rep_legal")

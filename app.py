@@ -51,16 +51,20 @@ def submit_form():
             # Nombre completo ordenado
             nombre_completo = f"{datos_rep.get('nombres', '')} {datos_rep.get('ape_paterno', '')} {datos_rep.get('ape_materno', '')}".strip()
             data_to_save["rep_nombre_completo"] = nombre_completo
+            # También lo ponemos en form_data para el PDF
+            form_data["rep_nombre_completo"] = nombre_completo
         else:
             data_to_save["rep_nombres"] = None
             data_to_save["rep_ape_paterno"] = None
             data_to_save["rep_ape_materno"] = None
             data_to_save["rep_nombre_completo"] = None
+            form_data["rep_nombre_completo"] = None
     else:
         data_to_save["rep_nombres"] = None
         data_to_save["rep_ape_paterno"] = None
         data_to_save["rep_ape_materno"] = None
         data_to_save["rep_nombre_completo"] = None
+        form_data["rep_nombre_completo"] = None
 
     # Guardar en Supabase
     try:

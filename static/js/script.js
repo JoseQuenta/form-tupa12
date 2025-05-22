@@ -18,7 +18,8 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
-// import { setupFlatpickr } from './setup-flatpickr.js';
+import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
+import { Spanish } from "https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js";
 
 import {
     dniInput,
@@ -280,6 +281,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.preventDefault();
                 buscarRucBtn.click();
             }
+        });
+    }
+
+    // --- Flatpickr para fecha de pago ---
+    const fechaPagoInput = document.getElementById("fecha_pago");
+    if (fechaPagoInput) {
+        flatpickr(fechaPagoInput, {
+            dateFormat: "d/m/Y",
+            locale: Spanish,
+            maxDate: "today",
+            defaultDate: "today",
+            allowInput: true,
+            disableMobile: false // fuerza mobile UI
         });
     }
 });
