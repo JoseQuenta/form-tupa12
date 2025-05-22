@@ -274,18 +274,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-
-    <!-- 
     <script>
-        flatpickr("#fecha_pago", {
-            dateFormat: "d/m/Y",
-            locale: "es", // ¡Esto es lo importante!
-            allowInput: true
-
-
-        });
-    </script> -->
-
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.flatpickr) {
+            flatpickr("#fecha_pago", {
+                dateFormat: "d/m/Y",
+                locale: "es",
+                allowInput: true,
+                defaultDate: new Date()
+            });
+        }
+    });
+    </script>
 
     <!-- Tu script principal -->
     <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
