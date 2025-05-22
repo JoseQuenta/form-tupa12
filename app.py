@@ -26,16 +26,44 @@ def submit_form():
     form_data = request.form.to_dict()
     archivos = request.files.getlist('adjuntos')
 
-    # Guardar en Supabase antes o después de generar el PDF
+    # --- Modelo limpio para Supabase ---
+    data_to_save = {}
+    # Copiar campos básicos
+    campos_basicos = [
+        "tipo_persona", "dni", "nombre", "apellido", "direccion_h1", "distrito", "provincia", "departamento",
+        "ruc", "razon_social", "rep_legal", "dni_rep_legal", "direccion_jur", "distrito_jur", "provincia_jur", "departamento_jur",
+        "telefono", "correo", "placa", "carga_util", "tipo_carroceria", "tipo_carroceria_otro", "numero_pago", "fecha_pago", "lugar_auditoria"
+    ]
+    for campo in campos_basicos:
+        data_to_save[campo] = form_data.get(campo)
+    data_to_save["sin_correo"] = bool(form_data.get("sinCorreo"))
+    data_to_save["fecha_envio"] = None  # Supabase puede poner default now()
+    if "firma_img" in form_data:
+        data_to_save["firma_img"] = form_data["firma_img"]
+
+    # --- Si es persona jurídica, obtener datos pulverizados del representante legal ---
+    if form_data.get("tipo_persona") == "juridica" and form_data.get("dni_rep_legal"):
+        datos_rep = consultar_dni(form_data["dni_rep_legal"])
+        if datos_rep:
+            data_to_save["rep_nombres"] = datos_rep.get("nombres")
+            data_to_save["rep_ape_paterno"] = datos_rep.get("ape_paterno")
+            data_to_save["rep_ape_materno"] = datos_rep.get("ape_materno")
+            # Nombre completo ordenado
+            nombre_completo = f"{datos_rep.get('nombres', '')} {datos_rep.get('ape_paterno', '')} {datos_rep.get('ape_materno', '')}".strip()
+            data_to_save["rep_nombre_completo"] = nombre_completo
+        else:
+            data_to_save["rep_nombres"] = None
+            data_to_save["rep_ape_paterno"] = None
+            data_to_save["rep_ape_materno"] = None
+            data_to_save["rep_nombre_completo"] = None
+    else:
+        data_to_save["rep_nombres"] = None
+        data_to_save["rep_ape_paterno"] = None
+        data_to_save["rep_ape_materno"] = None
+        data_to_save["rep_nombre_completo"] = None
+
+    # Guardar en Supabase
     try:
-        # Solo los campos relevantes, puedes ajustar según tu tabla
-        data_to_save = form_data.copy()
-        data_to_save["sin_correo"] = bool(form_data.get("sinCorreo"))
-        data_to_save["fecha_envio"] = None  # Supabase puede poner default now()
-        # Firma en base64
-        if "firma_img" in form_data:
-            data_to_save["firma_img"] = form_data["firma_img"]
-        # Insertar en la tabla
         supabase.table("formularios_tupa12").insert(data_to_save).execute()
     except Exception as e:
         print("❌ Error al guardar en Supabase:", e)
