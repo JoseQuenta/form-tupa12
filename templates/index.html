@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario con Firma</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/flatpickr.min.css') }}">
+    <!-- Eliminamos el CSS de Flatpickr -->
 </head>
 
 <body>
@@ -205,7 +205,7 @@
 
             <div class="form-group">
                 <label for="fecha_pago">Fecha de Pago:</label>
-                <input type="text" id="fecha_pago" name="fecha_pago" placeholder="dd/mm/yyyy">
+                <input type="date" id="fecha_pago" name="fecha_pago"> <!-- Cambiado a type="date" -->
                 <span id="fechaPagoError" class="error-message"></span>
             </div>
 
@@ -270,8 +270,7 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/flatpickr.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/es.js') }}"></script>
+    <!-- Eliminamos los scripts de Flatpickr -->
     <!-- Tu script principal -->
     <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

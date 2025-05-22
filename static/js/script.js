@@ -250,14 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Flatpickr para fecha de pago ---
     const fechaPagoInput = document.getElementById("fecha_pago");
-    if (fechaPagoInput && window.flatpickr) {
-        window.flatpickr(fechaPagoInput, {
-            dateFormat: "d/m/Y",
-            locale: "es", // Usar string para el locale
-            maxDate: "today",
-            defaultDate: "today",
-            allowInput: true,
-            disableMobile: false // fuerza mobile UI
-        });
+    if (fechaPagoInput) {
+        // Configuración para input type="date" nativo
+        const hoy = new Date();
+        const offset = hoy.getTimezoneOffset();
+        const hoyLocal = new Date(hoy.getTime() - (offset*60*1000));
+        fechaPagoInput.value = hoyLocal.toISOString().split('T')[0];
+        fechaPagoInput.max = hoyLocal.toISOString().split('T')[0];
     }
 });

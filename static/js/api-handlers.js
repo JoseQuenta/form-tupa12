@@ -108,8 +108,36 @@ export async function buscarRuc() {
 
             // numeroJurInput.value = datos.numero_juridico || "";
 
-            repLegalInput.value = datos.representante_legal || "";
-            dniRepLegalInput.value = datos.dni_representante || "";
+            // Llenar DNI del representante legal
+            const dniRep = datos.dni_representante || "";
+            dniRepLegalInput.value = dniRep;
+
+            // Si hay DNI de representante, buscar sus datos para el nombre completo
+            if (dniRep && repLegalInput) {
+                try {
+                    const dniResponse = await fetch(`/api/dni/${dniRep}`);
+                    if (dniResponse.ok) {
+                        const dniData = await dniResponse.json();
+                        if (dniData.success) {
+                            repLegalInput.value = `${dniData.nombres || ''} ${dniData.ape_paterno || ''} ${dniData.ape_materno || ''}`.trim();
+                        } else {
+                            // Si la API de DNI falla o no encuentra, usar el nombre que viene del RUC si existe
+                            repLegalInput.value = datos.representante_legal || "";
+                        }
+                    } else {
+                        // Si la llamada a la API de DNI falla, usar el nombre que viene del RUC
+                        repLegalInput.value = datos.representante_legal || "";
+                    }
+                } catch (dniError) {
+                    console.error("Error al buscar DNI del representante:", dniError);
+                    // En caso de error, usar el nombre que viene del RUC
+                    repLegalInput.value = datos.representante_legal || "";
+                }
+            } else if (repLegalInput) {
+                // Si no hay DNI de representante, usar el nombre que viene del RUC
+                repLegalInput.value = datos.representante_legal || "";
+            }
+
             updateStatus("Datos de RUC cargados.", "green", statusRucSpan);
 
             document.getElementById("telefono").focus();
