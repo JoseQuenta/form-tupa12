@@ -19,7 +19,6 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
 import flatpickr from "https://cdn.jsdelivr.net/npm/flatpickr";
-import { Spanish } from "https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js";
 
 import {
     dniInput,
@@ -289,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fechaPagoInput) {
         flatpickr(fechaPagoInput, {
             dateFormat: "d/m/Y",
-            locale: Spanish,
+            locale: "es", // Usar string para el locale
             maxDate: "today",
             defaultDate: "today",
             allowInput: true,
