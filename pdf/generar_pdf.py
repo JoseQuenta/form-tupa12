@@ -89,6 +89,14 @@ def generar_pdf(form_data, archivos):
             form_data["nombre_completo3"] = form_data["nombre_completo"].title()
             form_data["nombre_completo4"] = form_data["nombre_completo"].title()
 
+        # NUEVO: Para persona jurídica, usar el nombre completo del representante legal si está disponible
+        if tipo_persona == "juridica":
+            rep_nombre_completo = form_data.get("rep_nombre_completo")
+            if rep_nombre_completo:
+                form_data["rep_legal2"] = rep_nombre_completo
+            else:
+                form_data["rep_legal2"] = form_data.get("rep_legal")
+
         form_data["direccion_h2"] = form_data.get("direccion_h1")
         placa = form_data.get("placa", "").upper()
         lugar_auditoria = form_data.get("lugar_auditoria").title()

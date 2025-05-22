@@ -401,37 +401,46 @@ canvas {
   box-shadow: 0 4px 32px rgba(0,0,0,0.25);
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   position: relative;
-  max-width: 90vw;
+  max-width: 95vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .img-modal img {
-  max-width: 80vw;
+  max-width: 90vw;
   max-height: 70vh;
   border-radius: 6px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  object-fit: contain;
+  cursor: grab;
+  transition: box-shadow 0.2s;
+}
+
+.img-modal img:active {
+  cursor: grabbing;
 }
 
 .img-close {
-  background: #fff;
-  border: none;
-  color: #333;
-  font-size: 2rem;
-  font-weight: bold;
-  cursor: pointer;
   position: absolute;
   top: 0.5rem;
-  right: 0.7rem;
-  z-index: 2;
-  padding: 0 0.5rem;
-  line-height: 1;
+  right: 0.5rem;
+  background: #fff;
+  border: none;
+  font-size: 2rem;
+  color: #333;
+  cursor: pointer;
   border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
   transition: background 0.2s;
 }
+
 .img-close:hover {
   background: #eee;
 }

@@ -204,6 +204,54 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(overlay);
         document.body.style.overflow = "hidden";
 
+        // Permitir zoom con gestos (pinch-zoom y doble click)
+        const modalImg = overlay.querySelector('img');
+        let scale = 1;
+        let lastTouchDist = null;
+        let lastX = 0, lastY = 0, isDragging = false;
+
+        // Pinch zoom
+        modalImg.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (lastTouchDist) {
+                    let delta = dist - lastTouchDist;
+                    scale = Math.max(1, Math.min(4, scale + delta/200));
+                    modalImg.style.transform = `scale(${scale})`;
+                }
+                lastTouchDist = dist;
+            }
+        });
+        modalImg.addEventListener('touchend', function(e) {
+            if (e.touches.length < 2) lastTouchDist = null;
+        });
+        // Doble click para zoom
+        modalImg.addEventListener('dblclick', function(e) {
+            scale = scale === 1 ? 2 : 1;
+            modalImg.style.transform = `scale(${scale})`;
+        });
+        // Arrastrar imagen
+        modalImg.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            modalImg.style.cursor = 'grabbing';
+        });
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                modalImg.parentElement.scrollLeft -= (e.clientX - lastX);
+                modalImg.parentElement.scrollTop -= (e.clientY - lastY);
+                lastX = e.clientX;
+                lastY = e.clientY;
+            }
+        });
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            modalImg.style.cursor = 'grab';
+        });
+
         // Cerrar al hacer click en X o fuera de la imagen
         overlay.addEventListener("click", (e) => {
             if (e.target === overlay || e.target.classList.contains("img-close")) {
@@ -212,4 +260,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    // --- Buscar con Enter en DNI/RUC ---
+    const dniInput = document.getElementById('dni');
+    const buscarDniBtn = document.getElementById('buscarDniBtn');
+    if (dniInput && buscarDniBtn) {
+        dniInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Search') {
+                e.preventDefault();
+                buscarDniBtn.click();
+            }
+        });
+    }
+    const rucInput = document.getElementById('ruc');
+    const buscarRucBtn = document.getElementById('buscarRucBtn');
+    if (rucInput && buscarRucBtn) {
+        rucInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Search') {
+                e.preventDefault();
+                buscarRucBtn.click();
+            }
+        });
+    }
 });
