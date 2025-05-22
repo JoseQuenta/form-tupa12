@@ -166,12 +166,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-     // ✅ Inicializa flatpickr correctamente
-    flatpickr("#fecha_pago", {
-        dateFormat: "d/m/Y",
-        locale: 'es',
-        allowInput: true
-    });
+     // ✅ Inicializa flatpickr correctamente para Fecha de Pago
+     if (window.flatpickr) {
+        flatpickr("#fecha_pago", {
+            dateFormat: "d/m/Y",
+            locale: "es",
+            allowInput: true,
+            defaultDate: new Date(), // Siempre el día actual
+        });
+    } else {
+        console.warn("Flatpickr no está cargado.");
+    }
 
     // const selectCarroceria = document.getElementById("carroceria_select");
     // const campoOtro = document.getElementById("campo_carroceria_otro");
