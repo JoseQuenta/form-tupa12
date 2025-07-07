@@ -56,7 +56,6 @@ export function setupFormSubmission() {
         const fechaInput = document.getElementById('fecha_pago');
         if (fechaInput && fechaInput.hasAttribute('data-formatted-value')) {
             const formattedValue = fechaInput.getAttribute('data-formatted-value');
-            console.log(`📅 Usando fecha formateada para envío: ${formattedValue}`);
             fechaInput.value = formattedValue;
         }
 

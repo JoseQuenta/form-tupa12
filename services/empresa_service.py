@@ -31,8 +31,6 @@ class EmpresaService:
                     "message": "RUC debe tener exactamente 11 dígitos numéricos",
                 }
 
-            print(f"🏢 Consultando datos de empresa RUC: {ruc}")
-
             # 1. Consultar datos de la empresa
             resultado_ruc = consultar_ruc(ruc)
             if not resultado_ruc.get("success"):
@@ -43,35 +41,21 @@ class EmpresaService:
 
             # Crear objeto Empresa
             empresa = Empresa.from_dict(resultado_ruc["data"])
-            print(f"✅ Empresa encontrada: {empresa.razon_social}")
 
             # 2. Consultar representante legal
             representante = None
             resultado_rep = consultar_representante_legal(ruc)
 
             if resultado_rep.get("success") and resultado_rep.get("data"):
-                print(f"👤 Consultando representante legal...")
                 representante_data = resultado_rep["data"][0]  # Primer representante
                 representante = Representante.from_dict(representante_data)
 
                 # 3. Consultar datos personales del representante usando su DNI
                 if representante.dni:
-                    print(
-                        f"🔍 Consultando datos personales del DNI: {representante.dni}"
-                    )
                     resultado_dni = PersonaService.buscar_por_dni(representante.dni)
 
                     if resultado_dni.get("success"):
-                        print(f"✅ Datos personales del representante obtenidos")
                         representante.actualizar_datos_personales(resultado_dni["data"])
-                    else:
-                        print(
-                            f"⚠️ No se pudieron obtener datos personales del representante: {resultado_dni.get('message', 'Error desconocido')}"
-                        )
-                else:
-                    print(f"⚠️ Representante sin DNI válido")
-            else:
-                print(f"⚠️ No se encontró representante legal para el RUC")
 
             # Procesar dirección (lógica de negocio centralizada)
             direccion_procesada = EmpresaService._procesar_direccion(empresa.direccion)
@@ -96,9 +80,7 @@ class EmpresaService:
                     "dni_representante": representante.dni if representante else "",
                     "cargo_representante": representante.cargo if representante else "",
                     # Datos personales completos del representante (si se obtuvieron)
-                    "rep_nombres": (
-                        representante.nombres if representante else ""
-                    ),
+                    "rep_nombres": (representante.nombres if representante else ""),
                     "rep_apellido_paterno": (
                         representante.apellido_paterno if representante else ""
                     ),
@@ -124,7 +106,6 @@ class EmpresaService:
                     "message"
                 ] += f" - Representante: {representante.nombre_completo}"
 
-            print(f"✅ Respuesta completa preparada para {empresa.razon_social}")
             return response_data
 
         except Exception as e:

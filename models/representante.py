@@ -25,9 +25,7 @@ class Representante:
         """Obtiene el nombre en formato: Nombres Apellido_Paterno Apellido_Materno"""
         if self.nombres and self.apellido_paterno:
             return formatear_nombre_completo(
-                self.nombres, 
-                self.apellido_paterno, 
-                self.apellido_materno
+                self.nombres, self.apellido_paterno, self.apellido_materno
             )
         return self.nombre  # Fallback al nombre original
 
@@ -35,7 +33,7 @@ class Representante:
     def from_dict(cls, data):
         """Crear instancia desde datos de API de representante."""
         datos_limpios = limpiar_datos_api(data)
-        
+
         return cls(
             dni=datos_limpios.get(
                 "numero_de_documento", datos_limpios.get("dni", "")
@@ -51,7 +49,7 @@ class Representante:
         """Actualizar con datos obtenidos de la API de DNI."""
         if datos_persona:
             datos_limpios = limpiar_datos_api(datos_persona)
-            
+
             self.nombres = datos_limpios.get("nombres", "")
             self.apellido_paterno = datos_limpios.get("apellido_paterno", "")
             self.apellido_materno = datos_limpios.get("apellido_materno", "")

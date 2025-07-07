@@ -21,31 +21,23 @@ class PersonaService:
             dict: Respuesta estructurada con los datos de la persona o error
         """
         try:
-            print(f"🔍 PersonaService: Iniciando búsqueda de DNI {dni}")
-
             # Validar DNI
             if not dni or len(dni) != 8 or not dni.isdigit():
-                print(f"❌ PersonaService: DNI inválido {dni}")
                 return {
                     "success": False,
                     "message": "DNI debe tener exactamente 8 dígitos numéricos",
                 }
 
             # Consultar DNI en API externa
-            print(f"🌐 PersonaService: Consultando API externa para DNI {dni}")
             datos_dni = consultar_dni(dni)
             if not datos_dni:
-                print(f"❌ PersonaService: No se encontraron datos para DNI {dni}")
                 return {
                     "success": False,
                     "message": f"No se encontró información para el DNI {dni}",
                 }
 
-            print(f"✅ PersonaService: Datos recibidos de API: {datos_dni}")
-
             # Crear objeto Persona usando el modelo
             persona = Persona.from_dict(datos_dni)
-            print(f"👤 PersonaService: Persona creada: {persona.nombre_completo}")
 
             # Procesar dirección (lógica de negocio centralizada)
             direccion_procesada = PersonaService._procesar_direccion(persona.direccion)
@@ -67,14 +59,9 @@ class PersonaService:
                 "message": f"Datos encontrados para {persona.nombre_completo}",
             }
 
-            print(f"✅ PersonaService: Resultado final: {resultado}")
             return resultado
 
         except Exception as e:
-            print(f"❌ PersonaService: Error en buscar_por_dni: {str(e)}")
-            import traceback
-
-            traceback.print_exc()
             return {"success": False, "message": f"Error al consultar DNI: {str(e)}"}
 
     @staticmethod

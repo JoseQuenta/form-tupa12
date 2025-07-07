@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario con Firma</title>
+    <meta name="description"
+        content="Formulario TUPA 12 - SANIPES - Solicitud de habilitación de vehículos para transporte de productos pesqueros">
+    <meta name="author" content="SANIPES">
+    <title>TUPA 12 - SANIPES | Formulario de Habilitación Vehicular</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -77,12 +80,6 @@
                     <input type="text" id="departamento" name="departamento" class="uppercase-input">
                     <span id="departamentoError" class="error-message"></span>
                 </div>
-
-                <!-- <div class="form-group">
-                    <label for="ubigeo">Ubigeo:</label>
-                    <input type="tel" id="ubigeo" name="ubigeo" inputmode="numeric" pattern="\d+">
-                    <span id="ubigeoError" class="error-message"></span>
-                </div> -->
             </div>
 
             <!-- Datos para Persona Jurídica -->
@@ -277,17 +274,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('🔍 Configurando fecha compatible con todos los navegadores...');
-
             const fechaInput = document.getElementById('fecha_pago');
             if (!fechaInput) {
-                console.error('❌ Campo fecha no encontrado');
                 return;
             }
 
             // Detectar si es Edge
             const isEdge = /Edg/.test(navigator.userAgent);
-            console.log('🌐 Navegador detectado:', isEdge ? 'Edge' : 'Otro');
 
             if (isEdge) {
                 setupEdgeCompatibleDate(fechaInput);
@@ -297,8 +290,6 @@
         });
 
         function setupEdgeCompatibleDate(input) {
-            console.log('🔧 Configurando para Edge...');
-
             // Configurar como input date para Edge
             input.type = 'date';
             input.removeAttribute('placeholder');
@@ -306,12 +297,10 @@
             // Listener para formateo cuando cambia la fecha
             input.addEventListener('change', function () {
                 const value = this.value; // Formato yyyy-mm-dd de HTML5
-                console.log(`📅 Fecha raw: ${value}`);
 
                 if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
                     const [year, month, day] = value.split('-');
                     const formattedDate = `${day}/${month}/${year}`;
-                    console.log(`📅 Fecha formateada: ${formattedDate}`);
 
                     // Guardar formato para el servidor
                     this.setAttribute('data-formatted-value', formattedDate);
@@ -320,12 +309,9 @@
                     this.setAttribute('title', `Fecha seleccionada: ${formattedDate}`);
                 }
             });
-
-            console.log('✅ Edge configurado con input type="date"');
         }
 
         function setupOtherBrowsersDate(input) {
-            console.log('🔧 Configurando para otros navegadores...');
 
             // Intentar Flatpickr primero
             if (typeof flatpickr !== 'undefined') {
@@ -335,15 +321,13 @@
                         allowInput: true,
                         locale: "es"
                     });
-                    console.log('✅ Flatpickr configurado');
                     return;
                 } catch (error) {
-                    console.warn('⚠️ Error con Flatpickr:', error);
+                    // Continuar con fallback
                 }
             }
 
             // Fallback: formato manual
-            console.log('🔧 Usando formato manual...');
             input.placeholder = 'dd/mm/yyyy';
             input.maxLength = 10;
 
@@ -359,8 +343,6 @@
 
                 e.target.value = value;
             });
-
-            console.log('✅ Formato manual configurado');
         }
     </script>
 

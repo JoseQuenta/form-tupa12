@@ -69,28 +69,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (buscarDniBtn) {
         buscarDniBtn.addEventListener('click', buscarDni);
-    } else {
-        console.warn("Botón buscarDniBtn no encontrado en el DOM.");
     }
 
     if (buscarRucBtn) {
         buscarRucBtn.addEventListener('click', buscarRuc);
-    } else {
-        console.warn("Botón buscarRucBtn no encontrado en el DOM.");
     }
 
     const btnLimpiarHtml = document.querySelector('[onclick="limpiarFirma()"]');
     if (btnLimpiarHtml) {
         window.limpiarFirma = limpiarFirma;
-    } else {
-        console.warn("No se encontró un botón con onclick='limpiarFirma()'. La función no se expondrá globalmente.");
     }
 
     // Si el botón de limpiar firma está en el DOM, lo inicializamos
     if (limpiarFirmaBtn) {
         limpiarFirmaBtn.addEventListener('click', limpiarFirma);
-    } else {
-        console.warn("Botón limpiarFirmaBtn no encontrado en el DOM.");
     }
 
     if (btnLimpiar) {
@@ -99,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dniInput, nombreInput, apellidoInput, direccionInput, distritoInput,
                 provinciaInput, departamentoInput, rucInput, razonSocialInput,
                 direccionJurInput, distritoJurInput, provinciaJurInput, departamentoJurInput,
-                repLegalInput, dniRepLegalInput, telefonoInput, correoInput, 
+                repLegalInput, dniRepLegalInput, telefonoInput, correoInput,
                 numeroPagoInput, fechaPagoInput, placaInput, cargaUtilInput
             ];
             allFields.forEach(field => field && (field.value = ""));
@@ -126,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Puedes mantener los datos o ir a una sección específica
         });
     }
-    
+
     if (btnNuevo) {
         btnNuevo.addEventListener("click", () => {
             window.location.reload(); // recarga todo y limpia
@@ -166,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-     // ✅ Inicializa flatpickr correctamente
+    // ✅ Inicializa flatpickr correctamente
     flatpickr("#fecha_pago", {
         dateFormat: "d/m/Y",
         locale: 'es',

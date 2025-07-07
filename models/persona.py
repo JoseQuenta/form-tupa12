@@ -32,9 +32,7 @@ class Persona:
     def nombre_formateado(self):
         """Retorna el nombre en formato: Nombres Apellido_Paterno Apellido_Materno"""
         return formatear_nombre_completo(
-            self.nombres, 
-            self.apellido_paterno, 
-            self.apellido_materno
+            self.nombres, self.apellido_paterno, self.apellido_materno
         )
 
     def __str__(self):
@@ -43,7 +41,7 @@ class Persona:
     @classmethod
     def from_dict(cls, data):
         datos_limpios = limpiar_datos_api(data)
-        
+
         nombres = datos_limpios.get("nombres", "")
         ape_paterno = datos_limpios.get("apellido_paterno", "")
         ape_materno = datos_limpios.get("apellido_materno", "")
