@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario con Firma</title>
+    <meta name="description"
+        content="Formulario TUPA 12 - SANIPES - Solicitud de habilitación de vehículos para transporte de productos pesqueros">
+    <meta name="author" content="SANIPES">
+    <title>TUPA 12 - SANIPES | Formulario de Habilitación Vehicular</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Eliminamos el CSS de Flatpickr -->
     <style>
@@ -98,12 +101,6 @@
                     <input type="text" id="departamento" name="departamento" class="uppercase-input">
                     <span id="departamentoError" class="error-message"></span>
                 </div>
-
-                <!-- <div class="form-group">
-                    <label for="ubigeo">Ubigeo:</label>
-                    <input type="tel" id="ubigeo" name="ubigeo" inputmode="numeric" pattern="\d+">
-                    <span id="ubigeoError" class="error-message"></span>
-                </div> -->
             </div>
 
             <!-- Datos para Persona Jurídica -->
@@ -222,7 +219,7 @@
 
             <div class="form-group">
                 <label for="numero_pago">Número de Pago:</label>
-                <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
+                <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric" maxlength="7">
                 <span id="numeroPagoError" class="error-message"></span>
             </div>
 

@@ -2,7 +2,7 @@ import {
     tipoPersona, grupoNatural, grupoJuridica,
     // Persona Natural
     dniInput, nombreInput, apellidoInput, direccionInput,
-    distritoInput, provinciaInput, departamentoInput, 
+    distritoInput, provinciaInput, departamentoInput,
     // Persona Jurídica
     rucInput, razonSocialInput, direccionJurInput,
     distritoJurInput, provinciaJurInput, departamentoJurInput,
@@ -12,9 +12,7 @@ import {
 } from './dom-elements.js';
 
 export function setupPersonTypeToggle() {
-    console.log("setupPersonTypeToggle cargado ✅");
     tipoPersona.addEventListener("change", () => {
-        console.log("Cambiando tipo de persona:", tipoPersona.value); // <- deberías ver esto en consola
         const tipo = tipoPersona.value;
 
         // Quitar "requerido" de los campos
@@ -48,7 +46,7 @@ export function setupPersonTypeToggle() {
 
             limpiarCampos([
                 dniInput, nombreInput, apellidoInput, direccionInput,
-                distritoInput, provinciaInput, departamentoInput, 
+                distritoInput, provinciaInput, departamentoInput,
             ]);
 
         } else {
@@ -57,7 +55,7 @@ export function setupPersonTypeToggle() {
 
             limpiarCampos([
                 dniInput, nombreInput, apellidoInput, direccionInput,
-                distritoInput, provinciaInput, departamentoInput, 
+                distritoInput, provinciaInput, departamentoInput,
                 rucInput, razonSocialInput, direccionJurInput,
                 distritoJurInput, provinciaJurInput, departamentoJurInput,
                 repLegalInput, dniRepLegalInput

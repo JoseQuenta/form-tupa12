@@ -34,14 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (buscarDniBtn) {
         buscarDniBtn.addEventListener('click', buscarDni);
-    } else {
-        console.warn("Botón buscarDniBtn no encontrado en el DOM.");
     }
 
     if (buscarRucBtn) {
         buscarRucBtn.addEventListener('click', buscarRuc);
-    } else {
-        console.warn("Botón buscarRucBtn no encontrado en el DOM.");
     }
 
     // Eliminar la siguiente sección obsoleta que busca onclick="limpiarFirma()"
@@ -55,8 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si el botón de limpiar firma está en el DOM, lo inicializamos
     if (limpiarFirmaBtn) {
         limpiarFirmaBtn.addEventListener('click', limpiarFirma);
-    } else {
-        console.warn("Botón limpiarFirmaBtn no encontrado en el DOM.");
     }
 
     if (btnLimpiar) {
@@ -65,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dniInput, nombreInput, apellidoInput, direccionInput, distritoInput,
                 provinciaInput, departamentoInput, rucInput, razonSocialInput,
                 direccionJurInput, distritoJurInput, provinciaJurInput, departamentoJurInput,
-                repLegalInput, dniRepLegalInput, telefonoInput, correoInput, 
+                repLegalInput, dniRepLegalInput, telefonoInput, correoInput,
                 numeroPagoInput, fechaPagoInput, placaInput, cargaUtilInput
             ];
             allFields.forEach(field => field && (field.value = ""));
@@ -92,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Puedes mantener los datos o ir a una sección específica
         });
     }
-    
+
     if (btnNuevo) {
         btnNuevo.addEventListener("click", () => {
             window.location.reload(); // recarga todo y limpia
@@ -132,6 +126,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // ✅ Inicializa flatpickr correctamente
+    flatpickr("#fecha_pago", {
+        dateFormat: "d/m/Y",
+        locale: 'es',
+        allowInput: true
+    });
     // Elimina la inicialización de flatpickr aquí, se moverá a un script inline en el HTML
 
     // const selectCarroceria = document.getElementById("carroceria_select");
@@ -177,35 +177,35 @@ document.addEventListener("DOMContentLoaded", () => {
         let lastX = 0, lastY = 0, isDragging = false;
 
         // Pinch zoom
-        modalImg.addEventListener('touchmove', function(e) {
+        modalImg.addEventListener('touchmove', function (e) {
             if (e.touches.length === 2) {
                 const dx = e.touches[0].clientX - e.touches[1].clientX;
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
-                const dist = Math.sqrt(dx*dx + dy*dy);
+                const dist = Math.sqrt(dx * dx + dy * dy);
                 if (lastTouchDist) {
                     let delta = dist - lastTouchDist;
-                    scale = Math.max(1, Math.min(4, scale + delta/200));
+                    scale = Math.max(1, Math.min(4, scale + delta / 200));
                     modalImg.style.transform = `scale(${scale})`;
                 }
                 lastTouchDist = dist;
             }
         });
-        modalImg.addEventListener('touchend', function(e) {
+        modalImg.addEventListener('touchend', function (e) {
             if (e.touches.length < 2) lastTouchDist = null;
         });
         // Doble click para zoom
-        modalImg.addEventListener('dblclick', function(e) {
+        modalImg.addEventListener('dblclick', function (e) {
             scale = scale === 1 ? 2 : 1;
             modalImg.style.transform = `scale(${scale})`;
         });
         // Arrastrar imagen
-        modalImg.addEventListener('mousedown', function(e) {
+        modalImg.addEventListener('mousedown', function (e) {
             isDragging = true;
             lastX = e.clientX;
             lastY = e.clientY;
             modalImg.style.cursor = 'grabbing';
         });
-        document.addEventListener('mousemove', function(e) {
+        document.addEventListener('mousemove', function (e) {
             if (isDragging) {
                 modalImg.parentElement.scrollLeft -= (e.clientX - lastX);
                 modalImg.parentElement.scrollTop -= (e.clientY - lastY);
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 lastY = e.clientY;
             }
         });
-        document.addEventListener('mouseup', function() {
+        document.addEventListener('mouseup', function () {
             isDragging = false;
             modalImg.style.cursor = 'grab';
         });
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Configuración para input type="date" nativo
         const hoy = new Date();
         const offset = hoy.getTimezoneOffset();
-        const hoyLocal = new Date(hoy.getTime() - (offset*60*1000));
+        const hoyLocal = new Date(hoy.getTime() - (offset * 60 * 1000));
         fechaPagoInput.value = hoyLocal.toISOString().split('T')[0];
         fechaPagoInput.max = hoyLocal.toISOString().split('T')[0];
     }
