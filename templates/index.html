@@ -201,7 +201,7 @@
 
             <div class="form-group">
                 <label for="numero_pago">Número de Pago:</label>
-                <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric">
+                <input type="tel" id="numero_pago" name="numero_pago" pattern="\d+" inputmode="numeric" maxlength="7">
                 <span id="numeroPagoError" class="error-message"></span>
             </div>
 
@@ -275,16 +275,94 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
-    <!-- 
     <script>
-        flatpickr("#fecha_pago", {
-            dateFormat: "d/m/Y",
-            locale: "es", // ¡Esto es lo importante!
-            allowInput: true
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔍 Configurando fecha compatible con todos los navegadores...');
 
+            const fechaInput = document.getElementById('fecha_pago');
+            if (!fechaInput) {
+                console.error('❌ Campo fecha no encontrado');
+                return;
+            }
 
+            // Detectar si es Edge
+            const isEdge = /Edg/.test(navigator.userAgent);
+            console.log('🌐 Navegador detectado:', isEdge ? 'Edge' : 'Otro');
+
+            if (isEdge) {
+                setupEdgeCompatibleDate(fechaInput);
+            } else {
+                setupOtherBrowsersDate(fechaInput);
+            }
         });
-    </script> -->
+
+        function setupEdgeCompatibleDate(input) {
+            console.log('🔧 Configurando para Edge...');
+
+            // Configurar como input date para Edge
+            input.type = 'date';
+            input.removeAttribute('placeholder');
+
+            // Listener para formateo cuando cambia la fecha
+            input.addEventListener('change', function () {
+                const value = this.value; // Formato yyyy-mm-dd de HTML5
+                console.log(`📅 Fecha raw: ${value}`);
+
+                if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    const [year, month, day] = value.split('-');
+                    const formattedDate = `${day}/${month}/${year}`;
+                    console.log(`📅 Fecha formateada: ${formattedDate}`);
+
+                    // Guardar formato para el servidor
+                    this.setAttribute('data-formatted-value', formattedDate);
+
+                    // Actualizar valor visual si es posible
+                    this.setAttribute('title', `Fecha seleccionada: ${formattedDate}`);
+                }
+            });
+
+            console.log('✅ Edge configurado con input type="date"');
+        }
+
+        function setupOtherBrowsersDate(input) {
+            console.log('🔧 Configurando para otros navegadores...');
+
+            // Intentar Flatpickr primero
+            if (typeof flatpickr !== 'undefined') {
+                try {
+                    flatpickr(input, {
+                        dateFormat: "d/m/Y",
+                        allowInput: true,
+                        locale: "es"
+                    });
+                    console.log('✅ Flatpickr configurado');
+                    return;
+                } catch (error) {
+                    console.warn('⚠️ Error con Flatpickr:', error);
+                }
+            }
+
+            // Fallback: formato manual
+            console.log('🔧 Usando formato manual...');
+            input.placeholder = 'dd/mm/yyyy';
+            input.maxLength = 10;
+
+            input.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+
+                if (value.length >= 3) {
+                    value = value.substring(0, 2) + '/' + value.substring(2);
+                }
+                if (value.length >= 6) {
+                    value = value.substring(0, 5) + '/' + value.substring(5, 9);
+                }
+
+                e.target.value = value;
+            });
+
+            console.log('✅ Formato manual configurado');
+        }
+    </script>
 
 
     <!-- Tu script principal -->

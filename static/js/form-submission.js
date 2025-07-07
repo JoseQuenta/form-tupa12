@@ -24,7 +24,7 @@ function validarPagina2() {
     if (!fechaPagoInput.value.trim()) errores.push("Fecha de pago es obligatoria.");
     if (!placaInput.value.trim()) errores.push("Placa es obligatoria.");
     if (!cargaUtilInput.value.trim()) errores.push("Carga útil es obligatoria.");
-    
+
     // ✅ Validación de tipo de carrocería
     const tipoSeleccionado = carroceriaSelect?.value;
     const otroTexto = document.getElementById("tipo_carroceria_otro")?.value.trim();
@@ -34,7 +34,7 @@ function validarPagina2() {
     } else if (tipoSeleccionado === "Otros" && !otroTexto) {
         errores.push("Debe especificar el tipo de carrocería.");
     }
-    
+
 
     const blank = document.createElement('canvas');
     blank.width = firmaCanvas.width;
@@ -51,6 +51,14 @@ export function setupFormSubmission() {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         setupUppercaseFields();
+
+        // Manejar campo de fecha para Edge
+        const fechaInput = document.getElementById('fecha_pago');
+        if (fechaInput && fechaInput.hasAttribute('data-formatted-value')) {
+            const formattedValue = fechaInput.getAttribute('data-formatted-value');
+            console.log(`📅 Usando fecha formateada para envío: ${formattedValue}`);
+            fechaInput.value = formattedValue;
+        }
 
         const errores = [
             ...validarPagina1(),

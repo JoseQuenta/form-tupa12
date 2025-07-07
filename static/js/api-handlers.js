@@ -19,16 +19,11 @@ function updateStatus(message, color, targetSpan) {
     }
 }
 
-function recortarDireccionHastaParentesis(direccion) {
-    const match = direccion.match(/^(.+?\))\s*/);
-    return match ? match[1].trim() : direccion;
-}
-
 export async function buscarDni() {
     const dni = dniInput.value.trim();
     const fieldsToClear = [
         nombreInput, apellidoInput, direccionInput,
-        distritoInput, provinciaInput, departamentoInput, 
+        distritoInput, provinciaInput, departamentoInput,
     ];
 
     if (dni.length !== 8 || isNaN(dni)) {
@@ -44,31 +39,28 @@ export async function buscarDni() {
         const response = await fetch(`/api/dni/${dni}`);
         if (!response.ok) throw new Error("Error al consultar API de DNI");
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (data.success) {
-            const direccionCruda = data.domiciliado?.direccion || "";
+        if (result.success && result.data) {
+            const data = result.data;
             nombreInput.value = data.nombres || "";
-            apellidoInput.value = `${data.ape_paterno || ""} ${data.ape_materno || ""}`.trim();
-            direccionInput.value = recortarDireccionHastaParentesis(direccionCruda);
-            distritoInput.value = data.domiciliado?.distrito || "";
-            provinciaInput.value = data.domiciliado?.provincia || "";
-            departamentoInput.value = data.domiciliado?.departamento || "";
-            // ubigeoInput.value = data.domiciliado?.ubigeo || "";
+            apellidoInput.value = `${data.apellido_paterno || ""} ${data.apellido_materno || ""}`.trim();
+            direccionInput.value = data.direccion || "";
+            distritoInput.value = data.distrito || "";
+            provinciaInput.value = data.provincia || "";
+            departamentoInput.value = data.departamento || "";
             updateStatus("Datos de DNI cargados.", "green", statusSpan);
 
             document.getElementById("telefono").focus();
         } else {
             clearFields(fieldsToClear);
-            updateStatus(data.message || "DNI no encontrado.", "red", statusSpan);
-
+            updateStatus(result.message || "DNI no encontrado.", "red", statusSpan);
             document.getElementById("nombre").focus();
         }
     } catch (error) {
         console.error("Error al buscar DNI:", error);
         clearFields(fieldsToClear);
         updateStatus("Error al consultar DNI", "red", statusSpan);
-
         document.getElementById("nombre").focus();
     } finally {
         buscarDniBtn.disabled = false;
@@ -98,34 +90,28 @@ export async function buscarRuc() {
 
         const result = await response.json();
 
-        if (result.success && result.datos) {
-            const datos = result.datos;
-            razonSocialInput.value = datos.nombre_o_razon_social || "";
-            direccionJurInput.value = recortarDireccionHastaParentesis(datos.direccion_simple || "");
-            distritoJurInput.value = datos.distrito || "";
-            provinciaJurInput.value = datos.provincia || "";
-            departamentoJurInput.value = datos.departamento || "";
-
-            // numeroJurInput.value = datos.numero_juridico || "";
-
-            repLegalInput.value = datos.representante_legal || "";
-            dniRepLegalInput.value = datos.dni_representante || "";
+        if (result.success && result.data) {
+            const data = result.data;
+            razonSocialInput.value = data.razon_social || "";
+            direccionJurInput.value = data.direccion || "";
+            distritoJurInput.value = data.distrito || "";
+            provinciaJurInput.value = data.provincia || "";
+            departamentoJurInput.value = data.departamento || "";
+            repLegalInput.value = data.representante_legal || "";
+            dniRepLegalInput.value = data.dni_representante || "";
             updateStatus("Datos de RUC cargados.", "green", statusRucSpan);
 
             document.getElementById("telefono").focus();
         } else {
             clearFields(fieldsToClear);
             updateStatus(result.message || "RUC no encontrado.", "red", statusRucSpan);
-
             document.getElementById("razon_social").focus();
-
         }
     } catch (error) {
         console.error("Error al buscar RUC:", error);
         clearFields(fieldsToClear);
         updateStatus("Error al consultar RUC", "red", statusRucSpan);
         document.getElementById("razon_social").focus();
-
     } finally {
         buscarRucBtn.disabled = false;
     }
