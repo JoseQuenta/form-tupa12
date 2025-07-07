@@ -9,9 +9,30 @@
     <meta name="author" content="SANIPES">
     <title>TUPA 12 - SANIPES | Formulario de Habilitación Vehicular</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Eliminamos el CSS de Flatpickr -->
+    <style>
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
 
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -40,7 +61,7 @@
                         <input type="tel" id="dni" name="dni" maxlength="8" pattern="\d{8}" inputmode="numeric"
                             required>
                         <button type="button" id="buscarDniBtn">Buscar</button>
-                        <span id="status"></span>
+                        <span id="status"><span class="spinner" style="display: none;"></span></span>
                     </div>
                     <span id="dniError" class="error-message"></span>
                 </div>
@@ -89,7 +110,7 @@
                     <div class="input-group">
                         <input type="tel" id="ruc" name="ruc" maxlength="11" pattern="\d{11}" inputmode="numeric">
                         <button type="button" id="buscarRucBtn">Buscar</button>
-                        <span id="statusRuc"></span>
+                        <span id="statusRuc"><span class="spinner" style="display: none;"></span></span>
                     </div>
                 </div>
 
@@ -204,7 +225,7 @@
 
             <div class="form-group">
                 <label for="fecha_pago">Fecha de Pago:</label>
-                <input type="text" id="fecha_pago" name="fecha_pago" placeholder="dd/mm/yyyy">
+                <input type="date" id="fecha_pago" name="fecha_pago"> <!-- Cambiado a type="date" -->
                 <span id="fechaPagoError" class="error-message"></span>
             </div>
 
@@ -269,84 +290,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const fechaInput = document.getElementById('fecha_pago');
-            if (!fechaInput) {
-                return;
-            }
-
-            // Detectar si es Edge
-            const isEdge = /Edg/.test(navigator.userAgent);
-
-            if (isEdge) {
-                setupEdgeCompatibleDate(fechaInput);
-            } else {
-                setupOtherBrowsersDate(fechaInput);
-            }
-        });
-
-        function setupEdgeCompatibleDate(input) {
-            // Configurar como input date para Edge
-            input.type = 'date';
-            input.removeAttribute('placeholder');
-
-            // Listener para formateo cuando cambia la fecha
-            input.addEventListener('change', function () {
-                const value = this.value; // Formato yyyy-mm-dd de HTML5
-
-                if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    const [year, month, day] = value.split('-');
-                    const formattedDate = `${day}/${month}/${year}`;
-
-                    // Guardar formato para el servidor
-                    this.setAttribute('data-formatted-value', formattedDate);
-
-                    // Actualizar valor visual si es posible
-                    this.setAttribute('title', `Fecha seleccionada: ${formattedDate}`);
-                }
-            });
-        }
-
-        function setupOtherBrowsersDate(input) {
-
-            // Intentar Flatpickr primero
-            if (typeof flatpickr !== 'undefined') {
-                try {
-                    flatpickr(input, {
-                        dateFormat: "d/m/Y",
-                        allowInput: true,
-                        locale: "es"
-                    });
-                    return;
-                } catch (error) {
-                    // Continuar con fallback
-                }
-            }
-
-            // Fallback: formato manual
-            input.placeholder = 'dd/mm/yyyy';
-            input.maxLength = 10;
-
-            input.addEventListener('input', function (e) {
-                let value = e.target.value.replace(/\D/g, '');
-
-                if (value.length >= 3) {
-                    value = value.substring(0, 2) + '/' + value.substring(2);
-                }
-                if (value.length >= 6) {
-                    value = value.substring(0, 5) + '/' + value.substring(5, 9);
-                }
-
-                e.target.value = value;
-            });
-        }
-    </script>
-
-
+    <!-- Eliminamos los scripts de Flatpickr -->
     <!-- Tu script principal -->
     <script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

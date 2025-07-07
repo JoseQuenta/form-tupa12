@@ -18,41 +18,6 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
-// import { setupFlatpickr } from './setup-flatpickr.js';
-
-import {
-    dniInput,
-    nombreInput,
-    apellidoInput,
-    direccionInput,
-    distritoInput,
-    provinciaInput,
-    departamentoInput,
-    rucInput,
-    razonSocialInput,
-    direccionJurInput,
-    distritoJurInput,
-    provinciaJurInput,
-    departamentoJurInput,
-    repLegalInput,
-    dniRepLegalInput,
-    telefonoInput,
-    correoInput,
-
-    numeroPagoInput,
-    fechaPagoInput,
-    placaInput,
-    cargaUtilInput,
-
-    pagina1,
-    pagina2,
-    btnAnterior,
-    btnSiguiente,
-    btnEnviar,
-    sinCorreoCheckbox,
-    tipoPersona,
-
-} from './dom-elements.js';
 
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -75,10 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
         buscarRucBtn.addEventListener('click', buscarRuc);
     }
 
-    const btnLimpiarHtml = document.querySelector('[onclick="limpiarFirma()"]');
-    if (btnLimpiarHtml) {
-        window.limpiarFirma = limpiarFirma;
-    }
+    // Eliminar la siguiente sección obsoleta que busca onclick="limpiarFirma()"
+    // const btnLimpiarHtml = document.querySelector('[onclick="limpiarFirma()"]');
+    // if (btnLimpiarHtml) {
+    //     window.limpiarFirma = limpiarFirma;
+    // } else {
+    //     console.warn("No se encontró un botón con onclick='limpiarFirma()'. La función no se expondrá globalmente.");
+    // }
 
     // Si el botón de limpiar firma está en el DOM, lo inicializamos
     if (limpiarFirmaBtn) {
@@ -164,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         locale: 'es',
         allowInput: true
     });
+    // Elimina la inicialización de flatpickr aquí, se moverá a un script inline en el HTML
 
     // const selectCarroceria = document.getElementById("carroceria_select");
     // const campoOtro = document.getElementById("campo_carroceria_otro");
@@ -179,4 +148,115 @@ document.addEventListener("DOMContentLoaded", () => {
     // });
 
 
+});
+
+// --- Imagen expandible ---
+document.addEventListener("DOMContentLoaded", () => {
+    const img = document.querySelector('img[src$="pagosanipes.png"]');
+    if (!img) return;
+
+    img.style.cursor = "zoom-in";
+
+    img.addEventListener("click", function () {
+        // Crea el overlay y la imagen expandida
+        const overlay = document.createElement("div");
+        overlay.className = "img-overlay";
+        overlay.innerHTML = `
+            <div class="img-modal">
+                <button class="img-close" aria-label="Cerrar">&times;</button>
+                <img src="${img.src}" alt="Pago SANIPES" />
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+
+        // Permitir zoom con gestos (pinch-zoom y doble click)
+        const modalImg = overlay.querySelector('img');
+        let scale = 1;
+        let lastTouchDist = null;
+        let lastX = 0, lastY = 0, isDragging = false;
+
+        // Pinch zoom
+        modalImg.addEventListener('touchmove', function (e) {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (lastTouchDist) {
+                    let delta = dist - lastTouchDist;
+                    scale = Math.max(1, Math.min(4, scale + delta / 200));
+                    modalImg.style.transform = `scale(${scale})`;
+                }
+                lastTouchDist = dist;
+            }
+        });
+        modalImg.addEventListener('touchend', function (e) {
+            if (e.touches.length < 2) lastTouchDist = null;
+        });
+        // Doble click para zoom
+        modalImg.addEventListener('dblclick', function (e) {
+            scale = scale === 1 ? 2 : 1;
+            modalImg.style.transform = `scale(${scale})`;
+        });
+        // Arrastrar imagen
+        modalImg.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            modalImg.style.cursor = 'grabbing';
+        });
+        document.addEventListener('mousemove', function (e) {
+            if (isDragging) {
+                modalImg.parentElement.scrollLeft -= (e.clientX - lastX);
+                modalImg.parentElement.scrollTop -= (e.clientY - lastY);
+                lastX = e.clientX;
+                lastY = e.clientY;
+            }
+        });
+        document.addEventListener('mouseup', function () {
+            isDragging = false;
+            modalImg.style.cursor = 'grab';
+        });
+
+        // Cerrar al hacer click en X o fuera de la imagen
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay || e.target.classList.contains("img-close")) {
+                overlay.remove();
+                document.body.style.overflow = "";
+            }
+        });
+    });
+
+    // --- Buscar con Enter en DNI/RUC ---
+    const dniInput = document.getElementById('dni');
+    const buscarDniBtn = document.getElementById('buscarDniBtn');
+    if (dniInput && buscarDniBtn) {
+        dniInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Search') {
+                e.preventDefault();
+                buscarDniBtn.click();
+            }
+        });
+    }
+    const rucInput = document.getElementById('ruc');
+    const buscarRucBtn = document.getElementById('buscarRucBtn');
+    if (rucInput && buscarRucBtn) {
+        rucInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Search') {
+                e.preventDefault();
+                buscarRucBtn.click();
+            }
+        });
+    }
+
+    // --- Flatpickr para fecha de pago ---
+    const fechaPagoInput = document.getElementById("fecha_pago");
+    if (fechaPagoInput) {
+        // Configuración para input type="date" nativo
+        const hoy = new Date();
+        const offset = hoy.getTimezoneOffset();
+        const hoyLocal = new Date(hoy.getTime() - (offset * 60 * 1000));
+        fechaPagoInput.value = hoyLocal.toISOString().split('T')[0];
+        fechaPagoInput.max = hoyLocal.toISOString().split('T')[0];
+    }
 });

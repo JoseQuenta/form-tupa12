@@ -12,10 +12,14 @@ function clearFields(fields) {
     });
 }
 
-function updateStatus(message, color, targetSpan) {
+function updateStatus(message, color, targetSpan, showSpinner = false) {
     if (targetSpan) {
         targetSpan.textContent = message;
         targetSpan.style.color = color;
+        const spinner = targetSpan.querySelector('.spinner') || targetSpan.parentNode.querySelector('.spinner');
+        if (spinner) {
+            spinner.style.display = showSpinner ? 'inline-block' : 'none';
+        }
     }
 }
 
@@ -32,7 +36,7 @@ export async function buscarDni() {
         return;
     }
 
-    updateStatus("Buscando DNI...", "black", statusSpan);
+    updateStatus("Buscando DNI...", "black", statusSpan, true);
     buscarDniBtn.disabled = true;
 
     try {
@@ -57,6 +61,7 @@ export async function buscarDni() {
             updateStatus(result.message || "DNI no encontrado.", "red", statusSpan);
             document.getElementById("nombre").focus();
         }
+        updateStatus("Datos de DNI cargados.", "green", statusSpan); // Mover aquí para que el spinner se oculte después de cargar
     } catch (error) {
         console.error("Error al buscar DNI:", error);
         clearFields(fieldsToClear);
@@ -64,6 +69,7 @@ export async function buscarDni() {
         document.getElementById("nombre").focus();
     } finally {
         buscarDniBtn.disabled = false;
+        updateStatus(statusSpan.textContent, statusSpan.style.color, statusSpan, false); // Asegurar que el spinner se oculte
     }
 }
 
@@ -81,7 +87,7 @@ export async function buscarRuc() {
         return;
     }
 
-    updateStatus("Buscando RUC...", "black", statusRucSpan);
+    updateStatus("Buscando RUC...", "black", statusRucSpan, true);
     buscarRucBtn.disabled = true;
 
     try {
@@ -90,15 +96,51 @@ export async function buscarRuc() {
 
         const result = await response.json();
 
-        if (result.success && result.data) {
-            const data = result.data;
-            razonSocialInput.value = data.razon_social || "";
-            direccionJurInput.value = data.direccion || "";
-            distritoJurInput.value = data.distrito || "";
-            provinciaJurInput.value = data.provincia || "";
-            departamentoJurInput.value = data.departamento || "";
-            repLegalInput.value = data.representante_legal || "";
-            dniRepLegalInput.value = data.dni_representante || "";
+        if (result.success && result.datos) {
+            const datos = result.datos;
+            razonSocialInput.value = datos.nombre_o_razon_social || "";
+            direccionJurInput.value = recortarDireccionHastaParentesis(datos.direccion_simple || "");
+            distritoJurInput.value = datos.distrito || "";
+            provinciaJurInput.value = datos.provincia || "";
+            departamentoJurInput.value = datos.departamento || "";
+
+            // numeroJurInput.value = datos.numero_juridico || "";
+
+            // Llenar DNI del representante legal
+            const dniRep = datos.dni_representante || "";
+            dniRepLegalInput.value = dniRep;
+
+            // Si hay DNI de representante, buscar sus datos para el nombre completo
+            if (dniRep && repLegalInput) {
+                try {
+                    const dniResponse = await fetch(`/api/dni/${dniRep}`);
+                    if (dniResponse.ok) {
+                        const dniData = await dniResponse.json();
+                        if (dniData.success) {
+                            // Construir el nombre en el orden: nombres, apellido paterno, apellido materno
+                            let nombreCompletoRep = dniData.nombres || '';
+                            if (dniData.ape_paterno) {
+                                nombreCompletoRep += ` ${dniData.ape_paterno}`;
+                            }
+                            if (dniData.ape_materno) {
+                                nombreCompletoRep += ` ${dniData.ape_materno}`;
+                            }
+                            repLegalInput.value = nombreCompletoRep.trim();
+                        } else {
+                            repLegalInput.value = datos.representante_legal || "";
+                        }
+                    } else {
+                        repLegalInput.value = datos.representante_legal || "";
+                    }
+                } catch (dniError) {
+                    console.error("Error al buscar DNI del representante:", dniError);
+                    repLegalInput.value = datos.representante_legal || "";
+                }
+            } else if (repLegalInput) {
+                // Si no hay DNI de representante, usar el nombre que viene del RUC
+                repLegalInput.value = datos.representante_legal || "";
+            }
+
             updateStatus("Datos de RUC cargados.", "green", statusRucSpan);
 
             document.getElementById("telefono").focus();
@@ -107,6 +149,7 @@ export async function buscarRuc() {
             updateStatus(result.message || "RUC no encontrado.", "red", statusRucSpan);
             document.getElementById("razon_social").focus();
         }
+        updateStatus("Datos de RUC cargados.", "green", statusRucSpan); // Mover aquí para que el spinner se oculte después de cargar
     } catch (error) {
         console.error("Error al buscar RUC:", error);
         clearFields(fieldsToClear);
@@ -114,5 +157,6 @@ export async function buscarRuc() {
         document.getElementById("razon_social").focus();
     } finally {
         buscarRucBtn.disabled = false;
+        updateStatus(statusRucSpan.textContent, statusRucSpan.style.color, statusRucSpan, false); // Asegurar que el spinner se oculte
     }
 }
