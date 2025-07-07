@@ -63,11 +63,11 @@ class EmpresaService:
             # Devolver datos estructurados para el frontend
             response_data = {
                 "success": True,
-                "data": {
+                "datos": {
                     # Datos de la empresa
                     "numero": empresa.ruc,
-                    "razon_social": empresa.razon_social,
-                    "direccion": direccion_procesada,
+                    "nombre_o_razon_social": empresa.razon_social,
+                    "direccion_simple": direccion_procesada,
                     "distrito": empresa.distrito,
                     "provincia": empresa.provincia,
                     "departamento": empresa.departamento,

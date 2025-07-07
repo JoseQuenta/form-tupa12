@@ -99,7 +99,7 @@ export async function buscarRuc() {
         if (result.success && result.datos) {
             const datos = result.datos;
             razonSocialInput.value = datos.nombre_o_razon_social || "";
-            direccionJurInput.value = recortarDireccionHastaParentesis(datos.direccion_simple || "");
+            direccionJurInput.value = datos.direccion_simple || "";
             distritoJurInput.value = datos.distrito || "";
             provinciaJurInput.value = datos.provincia || "";
             departamentoJurInput.value = datos.departamento || "";
@@ -110,34 +110,8 @@ export async function buscarRuc() {
             const dniRep = datos.dni_representante || "";
             dniRepLegalInput.value = dniRep;
 
-            // Si hay DNI de representante, buscar sus datos para el nombre completo
-            if (dniRep && repLegalInput) {
-                try {
-                    const dniResponse = await fetch(`/api/dni/${dniRep}`);
-                    if (dniResponse.ok) {
-                        const dniData = await dniResponse.json();
-                        if (dniData.success) {
-                            // Construir el nombre en el orden: nombres, apellido paterno, apellido materno
-                            let nombreCompletoRep = dniData.nombres || '';
-                            if (dniData.ape_paterno) {
-                                nombreCompletoRep += ` ${dniData.ape_paterno}`;
-                            }
-                            if (dniData.ape_materno) {
-                                nombreCompletoRep += ` ${dniData.ape_materno}`;
-                            }
-                            repLegalInput.value = nombreCompletoRep.trim();
-                        } else {
-                            repLegalInput.value = datos.representante_legal || "";
-                        }
-                    } else {
-                        repLegalInput.value = datos.representante_legal || "";
-                    }
-                } catch (dniError) {
-                    console.error("Error al buscar DNI del representante:", dniError);
-                    repLegalInput.value = datos.representante_legal || "";
-                }
-            } else if (repLegalInput) {
-                // Si no hay DNI de representante, usar el nombre que viene del RUC
+            // Usar el nombre del representante que ya viene procesado del backend
+            if (repLegalInput) {
                 repLegalInput.value = datos.representante_legal || "";
             }
 

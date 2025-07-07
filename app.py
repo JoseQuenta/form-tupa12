@@ -66,13 +66,14 @@ def submit_form():
 
     # --- Si es persona jurídica, obtener datos pulverizados del representante legal ---
     if form_data.get("tipo_persona") == "juridica" and form_data.get("dni_rep_legal"):
-        datos_rep = consultar_dni(form_data["dni_rep_legal"])
-        if datos_rep:
+        resultado_dni = PersonaService.buscar_por_dni(form_data["dni_rep_legal"])
+        if resultado_dni.get("success"):
+            datos_rep = resultado_dni["data"]
             data_to_save["rep_nombres"] = datos_rep.get("nombres")
-            data_to_save["rep_ape_paterno"] = datos_rep.get("ape_paterno")
-            data_to_save["rep_ape_materno"] = datos_rep.get("ape_materno")
+            data_to_save["rep_ape_paterno"] = datos_rep.get("apellido_paterno")
+            data_to_save["rep_ape_materno"] = datos_rep.get("apellido_materno")
             # Nombre completo ordenado
-            nombre_completo = f"{datos_rep.get('nombres', '')} {datos_rep.get('ape_paterno', '')} {datos_rep.get('ape_materno', '')}".strip()
+            nombre_completo = f"{datos_rep.get('nombres', '')} {datos_rep.get('apellido_paterno', '')} {datos_rep.get('apellido_materno', '')}".strip()
             data_to_save["rep_nombre_completo"] = nombre_completo
             # También lo ponemos en form_data para el PDF
             form_data["rep_nombre_completo"] = nombre_completo
