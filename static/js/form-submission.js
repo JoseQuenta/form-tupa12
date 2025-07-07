@@ -81,7 +81,20 @@ export function setupFormSubmission() {
                 body: formData
             });
 
-            if (!response.ok) throw new Error("Error al generar PDF");
+            if (!response.ok) {
+                // Try to get error message from response
+                let errorMessage = "Error al generar PDF";
+                try {
+                    const errorData = await response.text();
+                    if (errorData) {
+                        errorMessage = errorData;
+                    }
+                } catch (e) {
+                    // If we can't parse the error, use the status
+                    errorMessage = `Error ${response.status}: ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
 
             const blob = await response.blob();
             urlPDFGenerado = URL.createObjectURL(blob);
@@ -102,8 +115,15 @@ export function setupFormSubmission() {
             document.body.removeChild(autoLink);
 
         } catch (error) {
-            alert("⚠️ Hubo un error al enviar el formulario.");
-            console.error(error);
+            let errorMessage = "⚠️ Hubo un error al enviar el formulario.";
+
+            // Try to get more specific error information
+            if (error.message) {
+                errorMessage += `\n\nDetalle: ${error.message}`;
+            }
+
+            alert(errorMessage);
+            console.error("Error completo:", error);
         } finally {
             btnEnviar.disabled = false;
             btnEnviar.textContent = "Generar PDF";

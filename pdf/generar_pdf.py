@@ -321,6 +321,7 @@ def generar_pdf(form_data, archivos):
 
         form_data["carga_util_texto"] = form_data.get("carga_util", "").strip()
 
+        campos_procesados = 0
         for key, val in form_data.items():
             if key in campos and val:
                 campo = campos[key]

@@ -1,7 +1,8 @@
 import os
 from flask import Flask, request, render_template, send_file, abort, jsonify
 from dotenv import load_dotenv
-from supabase import create_client, Client
+
+# from supabase import create_client, Client
 
 from pdf.generar_pdf import generar_pdf
 from services.persona_service import PersonaService
@@ -11,9 +12,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
-SUPABASE_URL = "https://qxeiglgklzejwayczsxs.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4ZWlnbGdrbHplandheWN6c3hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MzI4MDIsImV4cCI6MjA2MzUwODgwMn0.kCnTz6VVvm71uPZNV7qhZ7y3EBgm9y3rogXju9BCGsA"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# SUPABASE_URL = "https://qxeiglgklzejwayczsxs.supabase.co"
+# SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4ZWlnbGdrbHplandheWN6c3hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MzI4MDIsImV4cCI6MjA2MzUwODgwMn0.kCnTz6VVvm71uPZNV7qhZ7y3EBgm9y3rogXju9BCGsA"
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 @app.route("/")
@@ -91,25 +92,32 @@ def submit_form():
         form_data["rep_nombre_completo"] = None
 
     # Guardar en Supabase
-    try:
-        supabase.table("formularios_tupa12").insert(data_to_save).execute()
-    except Exception as e:
-        print("❌ Error al guardar en Supabase:", e)
-        # No abortar, solo loguear
+    # try:
+    #     supabase.table("formularios_tupa12").insert(data_to_save).execute()
+    # except Exception as e:
+    #     print("❌ Error al guardar en Supabase:", e)
+    #     # No abortar, solo loguear
 
     try:
-        form_data = request.form.to_dict()
-        archivos = request.files.getlist("adjuntos")
-
-        # Generar PDF
+        # Generar PDF usando los datos ya procesados
         pdf_generado, adjuntos = generar_pdf(form_data, archivos)
 
+        # Construir la ruta absoluta del archivo PDF
+        pdf_path = os.path.abspath(pdf_generado)
+
+        # Verificar que el archivo existe
+        if not os.path.exists(pdf_path):
+            raise FileNotFoundError(f"El archivo PDF generado no existe: {pdf_path}")
+
         # Enviar archivo al usuario
-        return send_file(pdf_generado, as_attachment=True, download_name=pdf_generado)
+        return send_file(pdf_path, as_attachment=True, download_name=pdf_generado)
 
     except Exception as e:
         print(f"❌ Error al generar PDF: {e}")
-        abort(500, "Error interno en la generación del PDF")
+        import traceback
+
+        traceback.print_exc()  # Esto ayudará a ver el error completo en los logs
+        abort(500, f"Error interno en la generación del PDF: {str(e)}")
 
 
 @app.route("/api/ruc/<ruc>")
@@ -169,6 +177,9 @@ def not_found(error):
 @app.errorhandler(500)
 def internal_error(error):
     """Manejo de errores 500."""
+    # Durante desarrollo, mostrar el error real
+    if hasattr(error, "description") and error.description:
+        return jsonify({"success": False, "message": str(error.description)}), 500
     return jsonify({"success": False, "message": "Error interno del servidor"}), 500
 
 
