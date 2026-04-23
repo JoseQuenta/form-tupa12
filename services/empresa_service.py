@@ -6,6 +6,7 @@ from api.ruc_api import consultar_ruc, consultar_representante_legal
 from services.persona_service import PersonaService
 from models.empresa import Empresa
 from models.representante import Representante
+from utils import procesar_direccion
 
 
 class EmpresaService:
@@ -58,7 +59,7 @@ class EmpresaService:
                         representante.actualizar_datos_personales(resultado_dni["data"])
 
             # Procesar dirección (lógica de negocio centralizada)
-            direccion_procesada = EmpresaService._procesar_direccion(empresa.direccion)
+            direccion_procesada = procesar_direccion(empresa.direccion)
 
             # Devolver datos estructurados para el frontend
             response_data = {
@@ -110,27 +111,6 @@ class EmpresaService:
 
         except Exception as e:
             return {"success": False, "message": f"Error al consultar RUC: {str(e)}"}
-
-    @staticmethod
-    def _procesar_direccion(direccion: str) -> str:
-        """
-        Procesa la dirección para extraer solo la parte relevante.
-        Lógica de negocio centralizada para el procesamiento de direcciones.
-
-        Args:
-            direccion (str): Dirección cruda de la API
-
-        Returns:
-            str: Dirección procesada
-        """
-        if not direccion:
-            return ""
-
-        # Recortar dirección hasta paréntesis (lógica de negocio)
-        import re
-
-        match = re.match(r"^(.+?\))\s*", direccion)
-        return match.group(1).strip() if match else direccion.strip()
 
     @staticmethod
     def validar_datos_empresa(datos: dict) -> dict:

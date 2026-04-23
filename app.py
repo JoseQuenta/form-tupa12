@@ -114,8 +114,9 @@ def submit_form():
         if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"El archivo PDF generado no existe: {pdf_path}")
 
-        # Enviar archivo al usuario
-        return send_file(pdf_path, as_attachment=True, download_name=pdf_generado)
+        # Enviar archivo al usuario con nombre limpio (sin UUID interno)
+        placa_clean = form_data.get("placa", "SIN_PLACA").upper().replace("/", "-").replace(" ", "_")
+        return send_file(pdf_path, as_attachment=True, download_name=f"TUPA_12_-_{placa_clean}.pdf")
 
     except ValueError as e:
         abort(400, str(e))

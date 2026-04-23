@@ -1,6 +1,7 @@
 """
 Utilidades comunes para el proyecto TUPA 12
 """
+import re
 
 
 def limpiar_datos_api(datos):
@@ -62,6 +63,14 @@ def formatear_nombre_completo(nombres, apellido_paterno, apellido_materno):
         partes.append(apellido_materno.strip())
 
     return " ".join(partes)
+
+
+def procesar_direccion(direccion: str) -> str:
+    """Extrae la parte relevante de una dirección raw de API (hasta el primer paréntesis cierre)."""
+    if not direccion:
+        return ""
+    match = re.match(r"^(.+?\))\s*", direccion)
+    return match.group(1).strip() if match else direccion.strip()
 
 
 def validar_datos_obligatorios(datos, campos_obligatorios):

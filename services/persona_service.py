@@ -4,6 +4,7 @@ Servicio para manejar la lógica de negocio relacionada con personas naturales.
 
 from api.dni_api import consultar_dni
 from models.persona import Persona
+from utils import procesar_direccion
 
 
 class PersonaService:
@@ -40,7 +41,7 @@ class PersonaService:
             persona = Persona.from_dict(datos_dni)
 
             # Procesar dirección (lógica de negocio centralizada)
-            direccion_procesada = PersonaService._procesar_direccion(persona.direccion)
+            direccion_procesada = procesar_direccion(persona.direccion)
 
             # Devolver datos estructurados para el frontend
             resultado = {
@@ -63,27 +64,6 @@ class PersonaService:
 
         except Exception as e:
             return {"success": False, "message": f"Error al consultar DNI: {str(e)}"}
-
-    @staticmethod
-    def _procesar_direccion(direccion: str) -> str:
-        """
-        Procesa la dirección para extraer solo la parte relevante.
-        Lógica de negocio centralizada para el procesamiento de direcciones.
-
-        Args:
-            direccion (str): Dirección cruda de la API
-
-        Returns:
-            str: Dirección procesada
-        """
-        if not direccion:
-            return ""
-
-        # Recortar dirección hasta paréntesis (lógica de negocio)
-        import re
-
-        match = re.match(r"^(.+?\))\s*", direccion)
-        return match.group(1).strip() if match else direccion.strip()
 
     @staticmethod
     def validar_datos_persona(datos: dict) -> dict:
