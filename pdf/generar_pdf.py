@@ -151,41 +151,52 @@ def _extension_archivo(filename):
 def _normalizar_adjuntos(archivos):
     """Valida adjuntos, los prepara para correo y para fusión PDF."""
     lista_adjuntos = []
-    adjuntos_para_fusion = []
+    adjuntos_para_fusion = {"tarjeta": [], "voucher": []}
 
-    for archivo in archivos:
-        if not archivo or not archivo.filename:
-            continue
+    if isinstance(archivos, dict):
+        archivos_tarjeta = archivos.get("tarjeta", [])
+        archivos_voucher = archivos.get("voucher", [])
+    else:
+        # Compatibilidad con el flujo anterior: todo se considera voucher.
+        archivos_tarjeta = []
+        archivos_voucher = archivos or []
 
-        filename = secure_filename(archivo.filename)
-        extension = _extension_archivo(filename)
+    archivos_ordenados = [("tarjeta", archivos_tarjeta), ("voucher", archivos_voucher)]
 
-        if extension not in EXTENSIONES_PERMITIDAS:
-            raise ValueError(
-                f"Tipo de archivo no permitido: {filename}. Solo se admiten PDF, JPG, JPEG y PNG."
-            )
+    for tipo_adjunto, grupo_archivos in archivos_ordenados:
+        for archivo in grupo_archivos:
+            if not archivo or not archivo.filename:
+                continue
 
-        try:
-            contenido = archivo.read()
+            filename = secure_filename(archivo.filename)
+            extension = _extension_archivo(filename)
 
-            lista_adjuntos.append(
-                {
-                    "filename": filename,
-                    "content": base64.b64encode(contenido).decode("utf-8"),
-                    "type": archivo.content_type or "application/octet-stream",
-                }
-            )
-            adjuntos_para_fusion.append(
-                {
-                    "filename": filename,
-                    "extension": extension,
-                    "content": contenido,
-                }
-            )
+            if extension not in EXTENSIONES_PERMITIDAS:
+                raise ValueError(
+                    f"Tipo de archivo no permitido: {filename}. Solo se admiten PDF, JPG, JPEG y PNG."
+                )
 
-            print(f"📎 Archivo adjunto procesado: {filename}")
-        except Exception as e:
-            print(f"❌ Error procesando archivo {archivo.filename}: {e}")
+            try:
+                contenido = archivo.read()
+
+                lista_adjuntos.append(
+                    {
+                        "filename": filename,
+                        "content": base64.b64encode(contenido).decode("utf-8"),
+                        "type": archivo.content_type or "application/octet-stream",
+                    }
+                )
+                adjuntos_para_fusion[tipo_adjunto].append(
+                    {
+                        "filename": filename,
+                        "extension": extension,
+                        "content": contenido,
+                    }
+                )
+
+                print(f"📎 Archivo adjunto procesado ({tipo_adjunto}): {filename}")
+            except Exception as e:
+                print(f"❌ Error procesando archivo {archivo.filename}: {e}")
 
     return lista_adjuntos, adjuntos_para_fusion
 
@@ -244,27 +255,51 @@ def _adjunto_a_pdf_doc(adjunto):
 
 
 def fusionar_pdf_con_adjuntos(pdf_principal_path, adjuntos_para_fusion):
-    """Fusiona el PDF principal con adjuntos PDF/imagen convertidos a PDF."""
+    """Fusiona con este orden: formulario (2 primeras), tarjeta, resto formulario, voucher."""
     if not adjuntos_para_fusion:
+        return pdf_principal_path
+
+    adjuntos_tarjeta = adjuntos_para_fusion.get("tarjeta", [])
+    adjuntos_voucher = adjuntos_para_fusion.get("voucher", [])
+
+    if not adjuntos_tarjeta and not adjuntos_voucher:
         return pdf_principal_path
 
     output_temp = f"{os.path.splitext(pdf_principal_path)[0]}__merged.pdf"
 
     final_doc = fitz.open()
     base_doc = fitz.open(pdf_principal_path)
-    final_doc.insert_pdf(base_doc)
-    base_doc.close()
 
-    for adjunto in adjuntos_para_fusion:
-        try:
-            adjunto_doc = _adjunto_a_pdf_doc(adjunto)
-            final_doc.insert_pdf(adjunto_doc)
-            adjunto_doc.close()
-            print(f"📄 Adjunto fusionado al PDF final: {adjunto['filename']}")
-        except Exception as e:
-            raise ValueError(
-                f"No se pudo procesar el archivo '{adjunto['filename']}': {e}"
-            )
+    total_paginas_formulario = len(base_doc)
+    primeras_paginas = min(2, total_paginas_formulario)
+
+    if primeras_paginas > 0:
+        final_doc.insert_pdf(base_doc, from_page=0, to_page=primeras_paginas - 1)
+
+    def insertar_adjuntos(lista_adjuntos, etiqueta):
+        for adjunto in lista_adjuntos:
+            try:
+                adjunto_doc = _adjunto_a_pdf_doc(adjunto)
+                final_doc.insert_pdf(adjunto_doc)
+                adjunto_doc.close()
+                print(
+                    f"📄 Adjunto fusionado al PDF final ({etiqueta}): {adjunto['filename']}"
+                )
+            except Exception as e:
+                raise ValueError(
+                    f"No se pudo procesar el archivo '{adjunto['filename']}': {e}"
+                )
+
+    insertar_adjuntos(adjuntos_tarjeta, "tarjeta")
+
+    if total_paginas_formulario > 2:
+        final_doc.insert_pdf(
+            base_doc, from_page=2, to_page=total_paginas_formulario - 1
+        )
+
+    insertar_adjuntos(adjuntos_voucher, "voucher")
+
+    base_doc.close()
 
     final_doc.save(output_temp, garbage=4, deflate=True)
     final_doc.close()
@@ -473,7 +508,7 @@ def generar_pdf(form_data, archivos):
         doc.save(nombre_archivo, garbage=4, deflate=True)
         doc.close()
 
-        # Si hay adjuntos, se convierten/fusionan al PDF final en el orden recibido.
+        # Si hay adjuntos, se fusionan con orden fijo de expediente.
         fusionar_pdf_con_adjuntos(nombre_archivo, adjuntos_para_fusion)
 
         print(f"💾 PDF guardado como: {nombre_archivo}")

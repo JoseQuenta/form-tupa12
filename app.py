@@ -28,7 +28,10 @@ def submit_form():
     form_data = request.form.to_dict()
     archivos_voucher = request.files.getlist("adjuntos_voucher")
     archivos_tarjeta = request.files.getlist("adjuntos_tarjeta")
-    archivos = archivos_voucher + archivos_tarjeta
+    archivos = {
+        "voucher": archivos_voucher,
+        "tarjeta": archivos_tarjeta,
+    }
 
     # --- Modelo limpio para Supabase ---
     data_to_save = {}
