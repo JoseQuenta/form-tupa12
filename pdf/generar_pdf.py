@@ -312,6 +312,14 @@ def completar_campos_formulario(form_data, tipo_persona):
     """Completa campos calculados del formulario."""
     # Campos comunes
     form_data["fecha_hoy"] = datetime.now().strftime("%d/%m/%Y")
+
+    # Convertir fecha_pago de YYYY-MM-DD (HTML date input) a DD/MM/YYYY para el PDF
+    fecha_pago = form_data.get("fecha_pago", "")
+    if fecha_pago:
+        try:
+            form_data["fecha_pago"] = datetime.strptime(fecha_pago, "%Y-%m-%d").strftime("%d/%m/%Y")
+        except ValueError:
+            pass  # Si ya viene en otro formato, se usa tal cual
     placa = form_data.get("placa", "").upper()
     form_data["placa2"] = placa
     form_data["placa3"] = placa
