@@ -18,6 +18,8 @@ import { btnNuevo } from './dom-elements.js'; // Asegúrate que exportas esto
 
 import { setupTipoCarroceria } from './tipo-carroceria.js';
 
+const EXTENSIONES_PERMITIDAS = ['pdf', 'jpg', 'jpeg', 'png'];
+
 
 // --- Lógica Principal ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -76,6 +78,16 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("btnSiguiente").style.display = "inline-block";
             document.getElementById("btnAnterior").style.display = "none";
             document.getElementById("btnEnviar").style.display = "none";
+
+            const adjuntosVoucher = document.getElementById('adjuntos_voucher');
+            const adjuntosTarjeta = document.getElementById('adjuntos_tarjeta');
+            const fileListVoucher = document.getElementById('fileListVoucher');
+            const fileListTarjeta = document.getElementById('fileListTarjeta');
+
+            if (adjuntosVoucher) adjuntosVoucher.value = '';
+            if (adjuntosTarjeta) adjuntosTarjeta.value = '';
+            if (fileListVoucher) fileListVoucher.innerHTML = '';
+            if (fileListTarjeta) fileListTarjeta.innerHTML = '';
         });
     }
 
@@ -94,37 +106,88 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    const dropzone = document.getElementById('dropzone');
-    const input = document.getElementById('adjuntos');
-    const fileList = document.getElementById('fileList');
+    function archivosValidos(files) {
+        const invalidos = [];
+        for (let i = 0; i < files.length; i++) {
+            const nombre = files[i].name || '';
+            const extension = nombre.includes('.') ? nombre.split('.').pop().toLowerCase() : '';
+            if (!EXTENSIONES_PERMITIDAS.includes(extension)) {
+                invalidos.push(nombre || `Archivo ${i + 1}`);
+            }
+        }
+        return invalidos;
+    }
 
-    dropzone.addEventListener('click', () => input.click());
-
-    dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('highlight');
-    });
-
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('highlight');
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        input.files = e.dataTransfer.files;
-        mostrarArchivos(input.files);
-    });
-
-    input.addEventListener('change', () => {
-        mostrarArchivos(input.files);
-    });
-
-    function mostrarArchivos(files) {
+    function mostrarArchivos(files, fileList) {
         fileList.innerHTML = "";
         for (let i = 0; i < files.length; i++) {
             fileList.innerHTML += `<div>📎 ${files[i].name}</div>`;
         }
-    };
+    }
+
+    function configurarDropzone({ dropzoneId, inputId, fileListId }) {
+        const dropzone = document.getElementById(dropzoneId);
+        const input = document.getElementById(inputId);
+        const fileList = document.getElementById(fileListId);
+
+        if (!dropzone || !input || !fileList) {
+            return;
+        }
+
+        dropzone.addEventListener('click', () => input.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('highlight');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('highlight');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('highlight');
+
+            const files = e.dataTransfer.files;
+            const invalidos = archivosValidos(files);
+
+            if (invalidos.length > 0) {
+                alert(`⚠️ Solo se permiten PDF, JPG, JPEG o PNG.\n\nArchivos inválidos:\n${invalidos.join('\n')}`);
+                input.value = '';
+                fileList.innerHTML = '';
+                return;
+            }
+
+            input.files = files;
+            mostrarArchivos(input.files, fileList);
+        });
+
+        input.addEventListener('change', () => {
+            const invalidos = archivosValidos(input.files);
+
+            if (invalidos.length > 0) {
+                alert(`⚠️ Solo se permiten PDF, JPG, JPEG o PNG.\n\nArchivos inválidos:\n${invalidos.join('\n')}`);
+                input.value = '';
+                fileList.innerHTML = '';
+                return;
+            }
+
+            mostrarArchivos(input.files, fileList);
+        });
+    }
+
+    configurarDropzone({
+        dropzoneId: 'dropzone_voucher',
+        inputId: 'adjuntos_voucher',
+        fileListId: 'fileListVoucher'
+    });
+
+    configurarDropzone({
+        dropzoneId: 'dropzone_tarjeta',
+        inputId: 'adjuntos_tarjeta',
+        fileListId: 'fileListTarjeta'
+    });
 
     // ✅ Inicializa flatpickr correctamente
     flatpickr("#fecha_pago", {

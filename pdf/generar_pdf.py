@@ -16,6 +16,10 @@ from models.representante import Representante
 
 
 TEMPLATE_PDF_PATH = "plantilla_A4.pdf"
+EXTENSIONES_PERMITIDAS = {"pdf", "jpg", "jpeg", "png"}
+A4_WIDTH = 595
+A4_HEIGHT = 842
+A4_MARGIN = 20
 
 
 def sobrescribir_si_vacio(data, campo, valor):
@@ -136,27 +140,141 @@ def procesar_persona_juridica(form_data):
         print(f"❌ Error procesando representante: {e}")
 
 
-def procesar_archivos_adjuntos(archivos):
-    """Procesa archivos adjuntos y los convierte a base64."""
+def _extension_archivo(filename):
+    if not filename or "." not in filename:
+        return ""
+    return filename.rsplit(".", 1)[1].lower()
+
+
+def _normalizar_adjuntos(archivos):
+    """Valida adjuntos, los prepara para correo y para fusión PDF."""
     lista_adjuntos = []
+    adjuntos_para_fusion = []
 
     for archivo in archivos:
-        if archivo and archivo.filename:
-            try:
-                filename = secure_filename(archivo.filename)
-                content_base64 = base64.b64encode(archivo.read()).decode("utf-8")
-                lista_adjuntos.append(
-                    {
-                        "filename": filename,
-                        "content": content_base64,
-                        "type": archivo.content_type or "application/octet-stream",
-                    }
-                )
-                print(f"📎 Archivo adjunto procesado: {filename}")
-            except Exception as e:
-                print(f"❌ Error procesando archivo {archivo.filename}: {e}")
+        if not archivo or not archivo.filename:
+            continue
 
-    return lista_adjuntos
+        filename = secure_filename(archivo.filename)
+        extension = _extension_archivo(filename)
+
+        if extension not in EXTENSIONES_PERMITIDAS:
+            raise ValueError(
+                f"Tipo de archivo no permitido: {filename}. Solo se admiten PDF, JPG, JPEG y PNG."
+            )
+
+        try:
+            contenido = archivo.read()
+
+            lista_adjuntos.append(
+                {
+                    "filename": filename,
+                    "content": base64.b64encode(contenido).decode("utf-8"),
+                    "type": archivo.content_type or "application/octet-stream",
+                }
+            )
+            adjuntos_para_fusion.append(
+                {
+                    "filename": filename,
+                    "extension": extension,
+                    "content": contenido,
+                }
+            )
+
+            print(f"📎 Archivo adjunto procesado: {filename}")
+        except Exception as e:
+            print(f"❌ Error procesando archivo {archivo.filename}: {e}")
+
+    return lista_adjuntos, adjuntos_para_fusion
+
+
+def _adjunto_a_pdf_doc(adjunto):
+    """Convierte un adjunto permitido a PDF A4 sin distorsión."""
+    extension = adjunto["extension"]
+    contenido = adjunto["content"]
+
+    def calcular_rect_destino(origen_rect):
+        ancho_origen = origen_rect.width
+        alto_origen = origen_rect.height
+
+        if ancho_origen <= 0 or alto_origen <= 0:
+            raise ValueError("Dimensiones inválidas en el adjunto")
+
+        ancho_max = A4_WIDTH - (2 * A4_MARGIN)
+        alto_max = A4_HEIGHT - (2 * A4_MARGIN)
+        escala = min(ancho_max / ancho_origen, alto_max / alto_origen)
+
+        ancho_final = ancho_origen * escala
+        alto_final = alto_origen * escala
+        x0 = (A4_WIDTH - ancho_final) / 2
+        y0 = (A4_HEIGHT - alto_final) / 2
+
+        return fitz.Rect(x0, y0, x0 + ancho_final, y0 + alto_final)
+
+    def normalizar_doc_pdf_a4(doc_origen):
+        doc_a4 = fitz.open()
+
+        for numero_pagina in range(len(doc_origen)):
+            pagina_origen = doc_origen[numero_pagina]
+            pagina_destino = doc_a4.new_page(width=A4_WIDTH, height=A4_HEIGHT)
+            rect_destino = calcular_rect_destino(pagina_origen.rect)
+            pagina_destino.show_pdf_page(
+                rect_destino,
+                doc_origen,
+                numero_pagina,
+                keep_proportion=True,
+            )
+
+        return doc_a4
+
+    if extension == "pdf":
+        pdf_origen = fitz.open(stream=contenido, filetype="pdf")
+        pdf_a4 = normalizar_doc_pdf_a4(pdf_origen)
+        pdf_origen.close()
+        return pdf_a4
+
+    # Para imágenes, se crea una página A4 y se inserta escalada sin distorsión.
+    filetype = "jpeg" if extension == "jpg" else extension
+    img_doc = fitz.open(stream=contenido, filetype=filetype)
+    imagen_pagina = img_doc[0]
+
+    doc_a4 = fitz.open()
+    pagina_a4 = doc_a4.new_page(width=A4_WIDTH, height=A4_HEIGHT)
+    rect_destino = calcular_rect_destino(imagen_pagina.rect)
+    pagina_a4.insert_image(rect_destino, stream=contenido, keep_proportion=True)
+
+    img_doc.close()
+    return doc_a4
+
+
+def fusionar_pdf_con_adjuntos(pdf_principal_path, adjuntos_para_fusion):
+    """Fusiona el PDF principal con adjuntos PDF/imagen convertidos a PDF."""
+    if not adjuntos_para_fusion:
+        return pdf_principal_path
+
+    output_temp = f"{os.path.splitext(pdf_principal_path)[0]}__merged.pdf"
+
+    final_doc = fitz.open()
+    base_doc = fitz.open(pdf_principal_path)
+    final_doc.insert_pdf(base_doc)
+    base_doc.close()
+
+    for adjunto in adjuntos_para_fusion:
+        try:
+            adjunto_doc = _adjunto_a_pdf_doc(adjunto)
+            final_doc.insert_pdf(adjunto_doc)
+            adjunto_doc.close()
+            print(f"📄 Adjunto fusionado al PDF final: {adjunto['filename']}")
+        except Exception as e:
+            raise ValueError(
+                f"No se pudo procesar el archivo '{adjunto['filename']}': {e}"
+            )
+
+    final_doc.save(output_temp, garbage=4, deflate=True)
+    final_doc.close()
+
+    os.replace(output_temp, pdf_principal_path)
+    return pdf_principal_path
 
 
 def completar_campos_formulario(form_data, tipo_persona):
@@ -228,7 +346,7 @@ def generar_pdf(form_data, archivos):
     print("🚀 Iniciando generación de PDF")
 
     # Procesar archivos adjuntos
-    lista_adjuntos = procesar_archivos_adjuntos(archivos)
+    lista_adjuntos, adjuntos_para_fusion = _normalizar_adjuntos(archivos)
 
     # Determinar tipo de persona
     tipo_persona = form_data.get("tipo_persona", "natural").lower()
@@ -358,6 +476,9 @@ def generar_pdf(form_data, archivos):
         nombre_archivo = f"TUPA_12_-_{placa.replace('/', '-').replace(' ', '_')}.pdf"
         doc.save(nombre_archivo, garbage=4, deflate=True)
         doc.close()
+
+        # Si hay adjuntos, se convierten/fusionan al PDF final en el orden recibido.
+        fusionar_pdf_con_adjuntos(nombre_archivo, adjuntos_para_fusion)
 
         print(f"💾 PDF guardado como: {nombre_archivo}")
 

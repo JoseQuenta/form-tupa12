@@ -319,12 +319,19 @@
     .dropzone-area:hover {
         background-color: #f1f1f1;
     }
+
+    .dropzone-area.highlight {
+      background-color: #eaf4ff;
+      border-color: #007bff;
+    }
     
     .dropzone-area input[type="file"] {
         display: none;
     }
     
-    #fileList {
+    #fileList,
+    #fileListVoucher,
+    #fileListTarjeta {
         margin-top: 1rem;
         font-size: 0.9rem;
         color: #444;

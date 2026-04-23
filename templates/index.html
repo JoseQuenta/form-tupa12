@@ -262,12 +262,23 @@
             </div>
 
             <div class="form-group dropzone-group">
-                <label for="adjuntos" class="dropzone-label">Adjuntar voucher, tarjeta de propiedad:</label>
-                <div id="dropzone" class="dropzone-area">
-                    <p>Arrastra los archivos aquí o haz clic para seleccionarlos</p>
-                    <input type="file" id="adjuntos" name="adjuntos" multiple>
+                <label for="adjuntos_voucher" class="dropzone-label">Adjuntar voucher:</label>
+                <div id="dropzone_voucher" class="dropzone-area">
+                    <p>Arrastra los archivos aquí o haz clic para seleccionarlos (PDF, JPG, JPEG, PNG)</p>
+                    <input type="file" id="adjuntos_voucher" name="adjuntos_voucher"
+                        accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png,application/pdf" multiple>
                 </div>
-                <div id="fileList"></div>
+                <div id="fileListVoucher"></div>
+            </div>
+
+            <div class="form-group dropzone-group">
+                <label for="adjuntos_tarjeta" class="dropzone-label">Adjuntar tarjeta de propiedad:</label>
+                <div id="dropzone_tarjeta" class="dropzone-area">
+                    <p>Arrastra los archivos aquí o haz clic para seleccionarlos (PDF, JPG, JPEG, PNG)</p>
+                    <input type="file" id="adjuntos_tarjeta" name="adjuntos_tarjeta"
+                        accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png,application/pdf" multiple>
+                </div>
+                <div id="fileListTarjeta"></div>
             </div>
         </div>
 

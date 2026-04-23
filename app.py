@@ -26,7 +26,9 @@ def index():
 @app.route("/submit", methods=["POST"])
 def submit_form():
     form_data = request.form.to_dict()
-    archivos = request.files.getlist("adjuntos")
+    archivos_voucher = request.files.getlist("adjuntos_voucher")
+    archivos_tarjeta = request.files.getlist("adjuntos_tarjeta")
+    archivos = archivos_voucher + archivos_tarjeta
 
     # --- Modelo limpio para Supabase ---
     data_to_save = {}
@@ -111,6 +113,9 @@ def submit_form():
 
         # Enviar archivo al usuario
         return send_file(pdf_path, as_attachment=True, download_name=pdf_generado)
+
+    except ValueError as e:
+        abort(400, str(e))
 
     except Exception as e:
         print(f"❌ Error al generar PDF: {e}")
