@@ -1,8 +1,10 @@
 from datetime import datetime
 import os
 import base64
+from io import BytesIO
 import fitz  # PyMuPDF
 from flask import abort, send_file
+from PIL import Image, ImageOps
 from werkzeug.utils import secure_filename
 
 from pdf.coordenadas import coordenadas
@@ -189,13 +191,11 @@ def _normalizar_adjuntos(archivos):
 
 
 def _adjunto_a_pdf_doc(adjunto):
-    """Convierte un adjunto permitido a PDF A4 sin distorsión."""
+    """Convierte un adjunto permitido a documento PDF para fusión final."""
     extension = adjunto["extension"]
     contenido = adjunto["content"]
 
-    def calcular_rect_destino(origen_rect):
-        ancho_origen = origen_rect.width
-        alto_origen = origen_rect.height
+    def calcular_rect_destino(ancho_origen, alto_origen):
 
         if ancho_origen <= 0 or alto_origen <= 0:
             raise ValueError("Dimensiones inválidas en el adjunto")
@@ -211,39 +211,35 @@ def _adjunto_a_pdf_doc(adjunto):
 
         return fitz.Rect(x0, y0, x0 + ancho_final, y0 + alto_final)
 
-    def normalizar_doc_pdf_a4(doc_origen):
-        doc_a4 = fitz.open()
-
-        for numero_pagina in range(len(doc_origen)):
-            pagina_origen = doc_origen[numero_pagina]
-            pagina_destino = doc_a4.new_page(width=A4_WIDTH, height=A4_HEIGHT)
-            rect_destino = calcular_rect_destino(pagina_origen.rect)
-            pagina_destino.show_pdf_page(
-                rect_destino,
-                doc_origen,
-                numero_pagina,
-                keep_proportion=True,
-            )
-
-        return doc_a4
-
     if extension == "pdf":
-        pdf_origen = fitz.open(stream=contenido, filetype="pdf")
-        pdf_a4 = normalizar_doc_pdf_a4(pdf_origen)
-        pdf_origen.close()
-        return pdf_a4
+        # PDF se mantiene en su formato y tamaño original.
+        return fitz.open(stream=contenido, filetype="pdf")
 
-    # Para imágenes, se crea una página A4 y se inserta escalada sin distorsión.
-    filetype = "jpeg" if extension == "jpg" else extension
-    img_doc = fitz.open(stream=contenido, filetype=filetype)
-    imagen_pagina = img_doc[0]
+    # Para imágenes, se corrige orientación EXIF y luego se ajusta a A4 sin distorsión.
+    with Image.open(BytesIO(contenido)) as imagen_origen:
+        imagen_corregida = ImageOps.exif_transpose(imagen_origen)
+
+        if imagen_corregida.mode not in ("RGB", "RGBA"):
+            imagen_corregida = imagen_corregida.convert("RGB")
+
+        ancho_img, alto_img = imagen_corregida.size
+
+        buffer_img = BytesIO()
+        if imagen_corregida.mode == "RGBA":
+            # PDF no maneja transparencia directa; la aplanamos sobre blanco.
+            fondo = Image.new("RGB", imagen_corregida.size, (255, 255, 255))
+            fondo.paste(imagen_corregida, mask=imagen_corregida.split()[3])
+            fondo.save(buffer_img, format="JPEG", quality=95)
+        else:
+            imagen_corregida.save(buffer_img, format="JPEG", quality=95)
+
+    imagen_bytes = buffer_img.getvalue()
 
     doc_a4 = fitz.open()
     pagina_a4 = doc_a4.new_page(width=A4_WIDTH, height=A4_HEIGHT)
-    rect_destino = calcular_rect_destino(imagen_pagina.rect)
-    pagina_a4.insert_image(rect_destino, stream=contenido, keep_proportion=True)
+    rect_destino = calcular_rect_destino(ancho_img, alto_img)
+    pagina_a4.insert_image(rect_destino, stream=imagen_bytes, keep_proportion=True)
 
-    img_doc.close()
     return doc_a4
 
 
